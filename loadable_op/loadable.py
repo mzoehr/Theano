@@ -3,27 +3,27 @@ import theano
 """
     The Theano loadable operator is designed to remove the
     dependency between a python Data object, storing inputs and targets,
-    and theano functions.
+    and theano function calls.
 
     Since graphic cards have limited memory, very often it
     is not possible to store the complete dataset (all minibatches)
-    in a single theano shared memory. A data object is needed to 
+    in a single theano shared memory. A data object is needed to
     load the specified minibatch into the shared_mem, when accessed.
 
-    When using more advanced optimizer classes you have to pass this data object
-    as a parameter making this class dependent on the data object. The code is not very
-    portable and reusable anymore! Manually calling an external
-    function to update a shared variable between each call makes the code more
-    cumbersome as well.
+    When using more advanced optimizer classes you have to pass this data
+    object as a parameter (CPU) making this class dependent on the underlying
+    object. The code is not very portable and reusable anymore! Manually
+    calling an external function to update a shared variable between each call
+    makes the code more cumbersome as well.
 
-    However using the Loadable operator will help you to overcome this problem.
-    Since more advanced python optimizer classes need at least a input an a target,
-    which is passed with givens as a function parameter and a model output (theano)
-    you can define a Loadable like:
+    However the use of the Loadable operator will help you to overcome this
+    problem. Since more advanced python optimizer classes need at least an
+    input an a target, which is passed with givens as a function parameter
+    and a model output (theano) you can define a Loadable like:
 
         # we create a Theano Loadable object (shared_memory + callback)
-        inputs = Loadable(data.shared_inputs, data.get_input, 'loadable_input')
-        targets = Loadable(data.shared_targets, data.get_target, 'loadable_target')
+        inputs = Loadable(data.shared_inputs, data.get_input, 'l_input')
+        targets = Loadable(data.shared_targets, data.get_target, 'l_target')
 
         # we define a givens term
         index = T.scalar()
@@ -31,13 +31,14 @@ import theano
         y = T.vector('y')
         givens = {x: inputs(index), y: targets(index)}
 
-    where data.get_XXX is a function of your data object loading a minibatch from CPU mem
-    or file, and data.shared_XXX is your shared memory object (storing 1 minibatch)
-    Whenever a theano function will access givens the OP will return the updated
-    shared_mem for the given minibatch.
+    where data.get_XXX is a function of your data object loading a minibatch
+    from CPU mem or file, and data.shared_XXX is your shared memory object
+    (storing 1 minibatch). Whenever a theano function will access givens the
+    OP will return the updated shared_mem for the given minibatch.
 
-    Hence you are able to pass givens and your model output to a optimizer class, 
-    but NOT the data object, making your code a lot more portable =)
+    Hence you are able to pass givens and your model output to a optimizer
+    class, but NOT the data object, making your code a lot more portable and
+    transparent =)
 
         optimizer = Optimizer(givens, output)
 
