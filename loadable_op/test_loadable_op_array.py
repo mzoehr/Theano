@@ -9,7 +9,7 @@ import theano
 import theano.tensor as T
 from theano.tensor import TensorType
 
-from loadable_incorrect import Loadable
+from loadable_array import Loadable
 #-----------------------------------------------------
 
 

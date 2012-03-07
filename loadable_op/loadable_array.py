@@ -90,4 +90,4 @@ class Loadable(theano.Op):
         if(self.index != inputs_storage[0]):
             self.index = int(inputs_storage[0])
             self.input = self.fn(self.index)
-        output_storage[0][0] = self.input
+        output_storage[0][0] = self.input.copy()
