@@ -67,8 +67,12 @@ class Loadable(theano.Op):
             return theano.Apply(self,
                             inputs=[index],
                             outputs=[theano.tensor.tensor3()])
+        elif(self.shared.ndim == 4):
+            return theano.Apply(self,
+                            inputs=[index],
+                            outputs=[theano.tensor.tensor4()])
         else:
-            raise TypeError('%s only works on vector/matrix/tensor3' \
+            raise TypeError('%s only works on vector/matrix/tensor3/tensor4' \
                             % self.name)
 
     def __eq__(self, other):
