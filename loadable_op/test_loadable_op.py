@@ -53,7 +53,7 @@ inputs = Loadable(data.shared_inputs, data.get_input, 'loadable_input')
 targets = Loadable(data.shared_targets, data.get_target, 'loadable_target')
 
 # run the tests
-shapes = [5, (5, 5), (5, 5, 5)]
+shapes = [5, (5, 5), (5, 5, 5), (5, 5, 5, 5)]
 for shape in shapes:
 
     # we define a givens term
