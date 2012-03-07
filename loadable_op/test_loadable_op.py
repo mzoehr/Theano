@@ -42,24 +42,28 @@ class Data(object):
         return self.targets[idx]
 
 #-----------------------------------------------------
+# define the parameters
+#-----------------------------------------------------
+N = 100
+shapes = [5, (5, 5), (5, 5, 5), (5, 5, 5, 5)]
+types = [T.vector, T.matrix, T.tensor3, T.tensor4]
+
+#-----------------------------------------------------
 # start the demo
 #-----------------------------------------------------
+for shape, type in zip(shapes, types):
 
-# we create a Data object
-data = Data()
+    # we create a Data object
+    data = Data(shape, N)
 
-# we create a Theano Loadable object (shared_memory + callback)
-inputs = Loadable(data.shared_inputs, data.get_input, 'loadable_input')
-targets = Loadable(data.shared_targets, data.get_target, 'loadable_target')
-
-# run the tests
-shapes = [5, (5, 5), (5, 5, 5), (5, 5, 5, 5)]
-for shape in shapes:
+    # we create a Theano Loadable object (shared_memory + callback)
+    inputs = Loadable(data.shared_inputs, data.get_input, 'loadable_input')
+    targets = Loadable(data.shared_targets, data.get_target, 'loadable_target')
 
     # we define a givens term
     index = T.scalar()
-    x = T.matrix('x')
-    y = T.matrix('y')
+    x = type('x')
+    y = type('y')
     givens = {x: inputs(index), y: targets(index)}
 
     # we define a theano function
