@@ -31,7 +31,7 @@ import theano
         y = T.vector('y')
         givens = {x: inputs(index), y: targets(index)}
 
-    where data.get_XXX is a function of your data object loading a minibatch
+    where data.get_XXX is a function of your data object returning a minibatch
     from CPU mem or file, and data.shared_XXX is your shared memory object
     (storing 1 minibatch). Whenever a theano function will access givens the
     OP will return the updated shared_mem for the given minibatch.
