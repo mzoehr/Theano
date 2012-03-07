@@ -5,13 +5,12 @@ import theano
     dependency between a python Data object, storing inputs and targets,
     and theano functions.
 
-    Big amounts of memory are needed to store data on
-    a GPU. Since graphic cards have limited memory, very often it
-    is not possible to store all minibatches in a single theano shared
-    memory. A data object is needed to load the specified minibatch
-    into the shared_mem, when accessed.
+    Since graphic cards have limited memory, very often it
+    is not possible to store the complete dataset (all minibatches)
+    in a single theano shared memory. A data object is needed to 
+    load the specified minibatch into the shared_mem, when accessed.
 
-    When using a more advanced optimizer classes you have to pass this data object 
+    When using more advanced optimizer classes you have to pass this data object
     as a parameter making this class dependent on the data object. The code is not very
     portable and reusable anymore! Manually calling an external
     function to update a shared variable between each call makes the code more
