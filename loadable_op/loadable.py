@@ -55,9 +55,21 @@ class Loadable(theano.Op):
 
     def make_node(self, index):
         index = theano.tensor.as_tensor_variable(index)
-        return theano.Apply(self,
+        if(self.shared.ndim == 1):
+            return theano.Apply(self,
                             inputs=[index],
                             outputs=[theano.tensor.vector()])
+        elif(self.shared.ndim == 2):
+            return theano.Apply(self,
+                            inputs=[index],
+                            outputs=[theano.tensor.matrix()])
+        elif(self.shared.ndim == 3):
+            return theano.Apply(self,
+                            inputs=[index],
+                            outputs=[theano.tensor.tensor3()])
+        else:
+            raise TypeError('%s only works on vector/matrix/tensor3' \
+                            % self.name)
 
     def __eq__(self, other):
         return type(self) == type(other) and \
