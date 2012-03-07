@@ -60,7 +60,7 @@ class Loadable(theano.Op):
         return theano.Apply(self,
                             inputs=[index],
                             outputs=[theano.tensor.TensorType(dtype=self.shared.type.dtype,
-                            broadcastable=[False] * self.shared.ndim)])
+                            broadcastable=[False] * self.shared.ndim)()])
 
     def __eq__(self, other):
         return type(self) == type(other) and \

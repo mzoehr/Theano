@@ -54,21 +54,10 @@ class Loadable(theano.Op):
 
     def make_node(self, index):
         index = theano.tensor.as_tensor_variable(index)
-        if(self.input.ndim == 1):
-            tensor = theano.tensor.vector(dtype=self.input.dtype)
-        elif(self.input.ndim == 2):
-            tensor = theano.tensor.matrix(dtype=self.input.dtype)
-        elif(self.input.ndim == 3):
-            tensor = theano.tensor.tensor3(dtype=self.input.dtype)
-        elif(self.input.ndim == 4):
-            tensor = theano.tensor.tensor4(dtype=self.input.dtype)
-        else:
-            raise TypeError('%s only works on [vector|matrix|tensor3|tensor4]'\
-                            % self.name)
-
         return theano.Apply(self,
                             inputs=[index],
-                            outputs=[tensor])
+                            outputs=[theano.tensor.TensorType(dtype=self.input.dtype,
+                            broadcastable=[False] * self.input.ndim)()])
 
     def __eq__(self, other):
         return type(self) == type(other) and \
