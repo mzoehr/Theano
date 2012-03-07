@@ -21,7 +21,7 @@ import theano
     input an a target, which is passed with givens as a function parameter
     and a model output (theano) you can define a Loadable like:
 
-        # we create a Theano Loadable object (shared_memory + callback)
+        # we create a Theano Loadable object (callback)
         inputs = Loadable(data.get_input, 'l_input')
         targets = Loadable(data.get_target, 'l_target')
 
@@ -55,24 +55,20 @@ class Loadable(theano.Op):
     def make_node(self, index):
         index = theano.tensor.as_tensor_variable(index)
         if(self.input.ndim == 1):
-            return theano.Apply(self,
-                            inputs=[index],
-                            outputs=[theano.tensor.vector()])
+            tensor = theano.tensor.vector(dtype=self.input.dtype)
         elif(self.input.ndim == 2):
-            return theano.Apply(self,
-                            inputs=[index],
-                            outputs=[theano.tensor.matrix()])
+            tensor = theano.tensor.matrix(dtype=self.input.dtype)
         elif(self.input.ndim == 3):
-            return theano.Apply(self,
-                            inputs=[index],
-                            outputs=[theano.tensor.tensor3()])
+            tensor = theano.tensor.tensor3(dtype=self.input.dtype)
         elif(self.input.ndim == 4):
-            return theano.Apply(self,
-                            inputs=[index],
-                            outputs=[theano.tensor.tensor4()])
+            tensor = theano.tensor.tensor4(dtype=self.input.dtype)
         else:
-            raise TypeError('%s only works on vector/matrix/tensor3/tensor4' \
+            raise TypeError('%s only works on [vector|matrix|tensor3|tensor4]'\
                             % self.name)
+
+        return theano.Apply(self,
+                            inputs=[index],
+                            outputs=[tensor])
 
     def __eq__(self, other):
         return type(self) == type(other) and \
