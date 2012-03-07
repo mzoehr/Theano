@@ -22,8 +22,8 @@ import theano
     and a model output (theano) you can define a Loadable like:
 
         # we create a Theano Loadable object (shared_memory + callback)
-        inputs = Loadable(data.shared_inputs, data.get_input, 'l_input')
-        targets = Loadable(data.shared_targets, data.get_target, 'l_target')
+        inputs = Loadable(data.get_input, 'l_input')
+        targets = Loadable(data.get_target, 'l_target')
 
         # we define a givens term
         index = T.scalar()
@@ -32,8 +32,7 @@ import theano
         givens = {x: inputs(index), y: targets(index)}
 
     where data.get_XXX is a function of your data object returning a minibatch
-    from CPU mem or file, and data.shared_XXX is your shared memory object
-    (storing 1 minibatch). Whenever a theano function will access givens the
+    from CPU mem or file. Whenever a theano function will access givens the
     OP will return the updated shared_mem for the given minibatch.
 
     Hence you are able to pass givens and your model output to a optimizer
@@ -47,27 +46,27 @@ import theano
 
 class Loadable(theano.Op):
 
-    def __init__(self, shared, fn, name=None):
+    def __init__(self, fn, name='LoadableOp'):
         self.name = name
         self.fn = fn
-        self.shared = shared
         self.index = 0
+        self.input = self.fn(self.index)
 
     def make_node(self, index):
         index = theano.tensor.as_tensor_variable(index)
-        if(self.shared.ndim == 1):
+        if(self.input.ndim == 1):
             return theano.Apply(self,
                             inputs=[index],
                             outputs=[theano.tensor.vector()])
-        elif(self.shared.ndim == 2):
+        elif(self.input.ndim == 2):
             return theano.Apply(self,
                             inputs=[index],
                             outputs=[theano.tensor.matrix()])
-        elif(self.shared.ndim == 3):
+        elif(self.input.ndim == 3):
             return theano.Apply(self,
                             inputs=[index],
                             outputs=[theano.tensor.tensor3()])
-        elif(self.shared.ndim == 4):
+        elif(self.input.ndim == 4):
             return theano.Apply(self,
                             inputs=[index],
                             outputs=[theano.tensor.tensor4()])
@@ -77,13 +76,12 @@ class Loadable(theano.Op):
 
     def __eq__(self, other):
         return type(self) == type(other) and \
-               (self.shared == other.shared) and \
                (self.name == other.name) and \
                (self.fn == other.fn)
 
     def __hash__(self):
         return hash(type(self)) ^ hash(self.name) ^ \
-               hash(self.shared) ^ hash(self.fn)
+               hash(self.fn)
 
     def __str__(self):
         return self.name
@@ -91,5 +89,5 @@ class Loadable(theano.Op):
     def perform(self, node, inputs_storage, output_storage):
         if(self.index != inputs_storage[0]):
             self.index = int(inputs_storage[0])
-            self.shared.set_value(self.fn(self.index))
-        output_storage[0][0] = self.shared.get_value()
+            self.input = self.fn(self.index)
+        output_storage[0][0] = self.input.copy()

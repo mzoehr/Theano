@@ -9,7 +9,7 @@ import theano
 import theano.tensor as T
 from theano.tensor import TensorType
 
-from loadable import Loadable
+from loadable_array import Loadable
 #-----------------------------------------------------
 
 
@@ -30,8 +30,6 @@ class Data(object):
         self.N = N
         self.inputs = [scipy.random.random(shape).astype(theano.config.floatX) for _ in range(self.N)]
         self.targets = [scipy.random.random(shape).astype(theano.config.floatX) for _ in range(self.N)]
-        self.shared_inputs = theano.shared(self.inputs[0], name='inputs')
-        self.shared_targets = theano.shared(self.targets[0], name='targets')
 
     def get_input(self, idx):
         # simulate file loading
@@ -57,8 +55,8 @@ for shape, type in zip(shapes, types):
     data = Data(shape, N)
 
     # we create a Theano Loadable object (shared_memory + callback)
-    inputs = Loadable(data.shared_inputs, data.get_input, 'loadable_input')
-    targets = Loadable(data.shared_targets, data.get_target, 'loadable_target')
+    inputs = Loadable(data.get_input, 'loadable_input')
+    targets = Loadable(data.get_target, 'loadable_target')
 
     # we define a givens term
     index = T.scalar()
