@@ -3,7 +3,8 @@
 """
 
 import sys
-import scipy
+
+import numpy as np
 
 import theano
 import theano.tensor as T
@@ -28,9 +29,9 @@ class Data(object):
     def __init__(self, shape=(5, 5), N=10):
 
         self.N = N
-        self.inputs = [scipy.random.random(shape).astype(theano.config.floatX)
+        self.inputs = [np.random.random(shape).astype(theano.config.floatX)
                        for _ in range(self.N)]
-        self.targets = [scipy.random.random(shape).astype(theano.config.floatX)
+        self.targets = [np.random.random(shape).astype(theano.config.floatX)
                         for _ in range(self.N)]
 
     def get_input(self, idx):
@@ -41,45 +42,50 @@ class Data(object):
         # simulate file loading
         return self.targets[idx]
 
-#-----------------------------------------------------
-# define the parameters
-#-----------------------------------------------------
-N = 100
-shapes = [5, (5, 6), (4, 5, 6), (3, 4, 5, 6)]
-types = [T.vector, T.matrix, T.tensor3, T.tensor4]
 
-#-----------------------------------------------------
-# start the demo
-#-----------------------------------------------------
-for shape, typ in zip(shapes, types):
+def test_loadable():
+    #-----------------------------------------------------
+    # define the parameters
+    #-----------------------------------------------------
+    N = 100
+    shapes = [5, (5, 6), (4, 5, 6), (3, 4, 5, 6)]
+    types = [T.vector, T.matrix, T.tensor3, T.tensor4]
 
-    # we create a Data object
-    data = Data(shape, N)
+    #-----------------------------------------------------
+    # start the demo
+    #-----------------------------------------------------
+    for shape, typ in zip(shapes, types):
 
-    # we create a Theano Loadable object (shared_memory + callback)
-    inputs = Loadable(data.get_input, 'loadable_input')
-    targets = Loadable(data.get_target, 'loadable_target')
+        # we create a Data object
+        data = Data(shape, N)
 
-    # we define a givens term
-    index = T.scalar()
-    x = typ('x')
-    y = typ('y')
-    givens = {x: inputs(index), y: targets(index)}
+        # we create a Theano Loadable object (shared_memory + callback)
+        inputs = Loadable(data.get_input, 'loadable_input')
+        targets = Loadable(data.get_target, 'loadable_target')
 
-    # we define a theano function
-    result = T.vector()
-    result = x + y
-    test_func = theano.function(inputs=[index], outputs=result, givens=givens)
+        # we define a givens term
+        index = T.scalar()
+        x = typ('x')
+        y = typ('y')
+        givens = {x: inputs(index), y: targets(index)}
 
-    # we run the test
-    for i in range(data.N):
-        value = test_func(i)
-        if  scipy.sum((value - (data.inputs[i] + data.targets[i]))) != 0:
-            print 'computation incorrect', i
-            print 'value', value
-            print 'sum', data.inputs[i] + data.targets[i]
-            print 'inputs', data.inputs[i]
-            print 'targets', data.targets[i]
-            sys.exit()
+        # we define a theano function
+        result = T.vector()
+        result = x + y
+        test_func = theano.function(inputs=[index], outputs=result,
+                                    givens=givens)
 
-    print 'computation correct for shape', shape
+        # we run the test
+        for i in range(data.N):
+            value = test_func(i)
+            if  np.sum((value - (data.inputs[i] + data.targets[i]))) != 0:
+                print 'computation incorrect', i
+                print 'value', value
+                print 'sum', data.inputs[i] + data.targets[i]
+                print 'inputs', data.inputs[i]
+                print 'targets', data.targets[i]
+                sys.exit()
+            value2 = test_func(i)
+            assert value2 is not value
+            assert not np.may_share_memory(value2, value)
+        print 'computation correct for shape', shape
