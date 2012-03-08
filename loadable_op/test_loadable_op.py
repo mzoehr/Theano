@@ -28,8 +28,10 @@ class Data(object):
     def __init__(self, shape=(5, 5), N=10):
 
         self.N = N
-        self.inputs = [scipy.random.random(shape).astype(theano.config.floatX) for _ in range(self.N)]
-        self.targets = [scipy.random.random(shape).astype(theano.config.floatX) for _ in range(self.N)]
+        self.inputs = [scipy.random.random(shape).astype(theano.config.floatX)
+                       for _ in range(self.N)]
+        self.targets = [scipy.random.random(shape).astype(theano.config.floatX)
+                        for _ in range(self.N)]
 
     def get_input(self, idx):
         # simulate file loading

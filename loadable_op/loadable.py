@@ -54,10 +54,12 @@ class Loadable(theano.Op):
 
     def make_node(self, index):
         index = theano.tensor.as_tensor_variable(index)
+        out_dtype = theano.tensor.TensorType(dtype=self.input.dtype,
+                                             broadcastable=[False] *
+                                             self.input.ndim)
         return theano.Apply(self,
                             inputs=[index],
-                            outputs=[theano.tensor.TensorType(dtype=self.input.dtype,
-                            broadcastable=[False] * self.input.ndim)()])
+                            outputs=[out_dtype()])
 
     def __eq__(self, other):
         return type(self) == type(other) and \
