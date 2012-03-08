@@ -1,5 +1,6 @@
 #---------------------------------------------------------------------
-# MNIST: 500sequences (10 digits/sequence) 
+# MNIST: 500 sequences (10 digits/sequence) 
+#	 minibatch: 100
 #        epochs: 5
 #        preconditioner: martens
 #        max_lcg_steps: 10
