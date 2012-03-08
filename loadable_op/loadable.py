@@ -46,8 +46,8 @@ import theano
 
 class Loadable(theano.Op):
 
-    def __init__(self, fn, name='LoadableOp'):
-        self.name = name
+    def __init__(self, fn, name=None):
+        self.name = str(name)
         self.fn = fn
         self.index = 0
         self.input = self.fn(self.index)
@@ -71,7 +71,7 @@ class Loadable(theano.Op):
                hash(self.fn)
 
     def __str__(self):
-        return self.name
+        return "%s{%s}" % (self.__class__.__name__, self.name)
 
     def perform(self, node, inputs_storage, output_storage):
         if(self.index != inputs_storage[0]):

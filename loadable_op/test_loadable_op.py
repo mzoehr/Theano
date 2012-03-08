@@ -60,8 +60,8 @@ def test_loadable():
         data = Data(shape, N)
 
         # we create a Theano Loadable object (shared_memory + callback)
-        inputs = Loadable(data.get_input, 'loadable_input')
-        targets = Loadable(data.get_target, 'loadable_target')
+        inputs = Loadable(data.get_input, 'input')
+        targets = Loadable(data.get_target, 'target')
 
         # we define a givens term
         index = T.scalar()
