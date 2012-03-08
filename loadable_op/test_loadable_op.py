@@ -2,6 +2,7 @@
     This is simple demonstration of the Theano loadable operator
 """
 
+from nose.plugins.skip import SkipTest
 import sys
 
 import numpy as np
@@ -9,7 +10,7 @@ import numpy as np
 import theano
 import theano.tensor as T
 from theano.tensor import TensorType
-
+from theano.misc.may_share_memory import may_share_memory
 from loadable import Loadable
 #-----------------------------------------------------
 
@@ -72,20 +73,22 @@ def test_loadable():
         # we define a theano function
         result = T.vector()
         result = x + y
-        test_func = theano.function(inputs=[index], outputs=result,
+        test_func = theano.function(inputs=[index], outputs=[result, x, y],
                                     givens=givens)
+        theano.printing.debugprint(test_func)
 
         # we run the test
         for i in range(data.N):
-            value = test_func(i)
-            if  np.sum((value - (data.inputs[i] + data.targets[i]))) != 0:
+            values = test_func(i)
+            if  np.sum((values[0] - (data.inputs[i] + data.targets[i]))) != 0:
                 print 'computation incorrect', i
                 print 'value', value
                 print 'sum', data.inputs[i] + data.targets[i]
                 print 'inputs', data.inputs[i]
                 print 'targets', data.targets[i]
-                sys.exit()
-            value2 = test_func(i)
-            assert value2 is not value
-            assert not np.may_share_memory(value2, value)
+                assert False
+            values2 = test_func(i)
+            for i in range(3):
+                assert not may_share_memory(values2[i], values[i])
+                assert (np.asarray(values2[i]) == np.asarray(values[i])).all()
         print 'computation correct for shape', shape
