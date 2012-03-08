@@ -51,7 +51,7 @@ types = [T.vector, T.matrix, T.tensor3, T.tensor4]
 #-----------------------------------------------------
 # start the demo
 #-----------------------------------------------------
-for shape, type in zip(shapes, types):
+for shape, typ in zip(shapes, types):
 
     # we create a Data object
     data = Data(shape, N)
@@ -62,8 +62,8 @@ for shape, type in zip(shapes, types):
 
     # we define a givens term
     index = T.scalar()
-    x = type('x')
-    y = type('y')
+    x = typ('x')
+    y = typ('y')
     givens = {x: inputs(index), y: targets(index)}
 
     # we define a theano function
