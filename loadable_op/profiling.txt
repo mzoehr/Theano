@@ -1,0 +1,1166 @@
+#---------------------------------------------------------------------
+# MNIST: 500sequences (10 digits/sequence) 
+#        epochs: 5
+#        preconditioner: martens
+#        max_lcg_steps: 10
+#        max_backtrack: 5
+#---------------------------------------------------------------------
+
+Function profiling
+==================
+  Message: ridge_update
+  Time in 106 calls to Function.__call__: 1.546049e-02s
+  Time in Function.fn.__call__: 1.070786e-02s (69.259%)
+  Time in thunks: 9.118557e-03s (58.980%)
+
+Ops
+---
+<% time> <sum %> <apply time> <time per call> <type> <#call> <#apply> <Op name>
+  60.1%    60.1%       0.005s       5.17e-05s     C      106        1   GpuElemwise{mul,no_inplace}
+  28.2%    88.4%       0.003s       2.43e-05s     Py     106        1   GpuFromHost
+  11.6%   100.0%       0.001s       1.00e-05s     C      106        1   GpuElemwise{Mul{output_types_preference=transfer_type{1}, _op_use_c_co
+   ... (remaining 0 Ops account for   0.00%(0.00s) of the runtime)
+
+Apply
+------
+<% time> <sum %> <apply time> <time per call> <#call> <id> <Apply name>
+  60.1%    60.1%       0.005s       5.17e-05s    106     1 GpuElemwise{mul,no_inplace}(lambda, GpuFromHost.0)
+  28.2%    88.4%       0.003s       2.43e-05s    106     0 GpuFromHost(<TensorType(float32, scalar)>)
+  11.6%   100.0%       0.001s       1.00e-05s    106     2 GpuElemwise{Mul{output_types_preference=transfer_type{1}, _op_use_c_code=True}}[(
+   ... (remaining 0 Apply instances account for 0.00%(0.00s) of the runtime)
+
+Function profiling
+==================
+  Message: compute_preconditioner
+  Time in 2893 calls to Function.__call__: 4.058119e+02s
+  Time in Function.fn.__call__: 4.055616e+02s (99.938%)
+  Time in thunks: 4.052040e+02s (99.850%)
+
+Ops
+---
+<% time> <sum %> <apply time> <time per call> <type> <#call> <#apply> <Op name>
+  47.0%    47.0%     190.551s       6.59e-02s     Py    2893        1   for{inplace,gpu,grad_of_scan_fn}
+  24.0%    71.0%      97.250s       3.36e-02s     Py    2893        1   for{inplace,gpu,scan_fn}
+  20.0%    91.0%      81.096s       2.80e-02s     Py    2893        1   for{inplace,gpu,grad_of_scan_fn}
+   6.1%    97.2%      24.916s       8.61e-03s     Py    2893        1   for{inplace,gpu,scan_fn}
+   0.7%    97.8%       2.674s       1.03e-04s     C     26037        9   GpuAlloc
+   0.5%    98.4%       2.137s       3.69e-04s     Py    5786        2   GpuFromHost
+   0.3%    98.7%       1.303s       4.50e-04s     Py    2893        1   loadable_input
+   0.1%    98.8%       0.607s       4.19e-05s     Py    14465        5   GpuSubtensor{int64:int64:int8}
+   0.1%    99.0%       0.428s       2.96e-05s     Py    14465        5   GpuSubtensor{int64}
+   0.1%    99.1%       0.415s       1.43e-04s     Py    2893        1   GpuJoin
+   0.1%    99.2%       0.385s       1.33e-04s     Py    2893        1   GpuIncSubtensor{Inc;:int64:}
+   0.1%    99.2%       0.265s       9.15e-05s     Py    2893        1   <theano.tensor.basic.AdvancedIncSubtensor object at 0x15eb40d0>
+   0.1%    99.3%       0.230s       7.95e-05s     Py    2893        1   GpuIncSubtensor{InplaceSet;:int64:}
+   0.1%    99.3%       0.225s       2.59e-05s     Py    8679        3   GpuSubtensor{::-1}
+   0.1%    99.4%       0.224s       1.55e-05s     C     14465        5   GpuElemwise{Composite{[add(i0, sqr(i1))]}}[(0, 0)]
+   0.1%    99.4%       0.208s       7.20e-05s     C     2893        1   GPU_mrg_uniform{CudaNdarrayType(float32, vector),no_inplace}
+   0.0%    99.5%       0.199s       3.44e-05s     Py    5786        2   GpuSubtensor{:int64:}
+   0.0%    99.5%       0.193s       6.65e-05s     Py    2893        1   GpuIncSubtensor{InplaceInc;0:9223372036854775807:}
+   0.0%    99.6%       0.190s       3.28e-05s     Py    5786        2   GpuSubtensor{int32::100}
+   0.0%    99.6%       0.188s       6.50e-05s     Py    2893        1   GpuIncSubtensor{InplaceInc;1:9223372036854775807:}
+   ... (remaining 83 Ops account for   0.38%(1.52s) of the runtime)
+
+Apply
+------
+<% time> <sum %> <apply time> <time per call> <#call> <id> <Apply name>
+  47.0%    47.0%     190.551s       6.59e-02s   2893   215 for{inplace,gpu,grad_of_scan_fn}(Elemwise{Composite{[Composite{[Composite{[minimu
+  24.0%    71.0%      97.250s       3.36e-02s   2893   142 for{inplace,gpu,scan_fn}(Elemwise{Composite{[Composite{[Composite{[minimum(maximu
+  20.0%    91.0%      81.096s       2.80e-02s   2893   205 for{inplace,gpu,grad_of_scan_fn}(Elemwise{Switch{output_types_preference=transfer
+   6.1%    97.2%      24.916s       8.61e-03s   2893   150 for{inplace,gpu,scan_fn}(Elemwise{Switch{output_types_preference=transfer_type{2}
+   0.5%    97.7%       2.020s       6.98e-04s   2893    19 GpuFromHost(loadable_input.0)
+   0.3%    98.0%       1.303s       4.50e-04s   2893     0 loadable_input(index)
+   0.1%    98.1%       0.462s       1.60e-04s   2893   133 GpuAlloc(CudaNdarrayConstant{[[[ 0.]]]}, Elemwise{Composite{[Composite{[add(maxim
+   0.1%    98.2%       0.423s       1.46e-04s   2893    32 GpuAlloc(CudaNdarrayConstant{[[[  5.15097947e-14]]]}, Elemwise{add,no_inplace}.0,
+   0.1%    98.3%       0.415s       1.43e-04s   2893   198 GpuJoin(TensorConstant{0}, GpuElemwise{Composite{[mul(i0, cos(i1))]},no_inplace}.
+   0.1%    98.4%       0.414s       1.43e-04s   2893    75 GpuAlloc(CudaNdarrayConstant{[[[  1.47270976e-14]]]}, Elemwise{Composite{[Composi
+   0.1%    98.5%       0.411s       1.42e-04s   2893    70 GpuAlloc(CudaNdarrayConstant{[[[  6.63633515e-22]]]}, Elemwise{Switch{output_type
+   0.1%    98.6%       0.392s       1.35e-04s   2893   159 GpuAlloc(CudaNdarrayConstant{[[[  2.42304278e-14]]]}, Elemwise{Switch{output_type
+   0.1%    98.7%       0.385s       1.33e-04s   2893   209 GpuIncSubtensor{Inc;:int64:}(GpuAlloc.0, GpuSubtensor{::-1}.0, ScalarFromTensor.0
+   0.1%    98.8%       0.352s       1.22e-04s   2893    76 GpuAlloc(CudaNdarrayConstant{[[[  1.93533882e-14]]]}, Elemwise{Composite{[Composi
+   0.1%    98.9%       0.265s       9.15e-05s   2893   168 <theano.tensor.basic.AdvancedIncSubtensor object at 0x15eb40d0>(Alloc.0, Alloc.0,
+   0.1%    98.9%       0.230s       7.95e-05s   2893   139 GpuIncSubtensor{InplaceSet;:int64:}(GpuAlloc.0, Rebroadcast{0}.0, Constant{1})
+   0.1%    99.0%       0.224s       7.75e-05s   2893    73 GpuSubtensor{int64:int64:int8}(GpuFromHost.0, ScalarFromTensor.0, ScalarFromTenso
+   0.1%    99.0%       0.208s       7.20e-05s   2893   185 GPU_mrg_uniform{CudaNdarrayType(float32, vector),no_inplace}(<CudaNdarrayType(flo
+   0.0%    99.1%       0.193s       6.65e-05s   2893   212 GpuIncSubtensor{InplaceInc;0:9223372036854775807:}(GpuAlloc.0, GpuIncSubtensor{In
+   0.0%    99.1%       0.188s       6.50e-05s   2893   213 GpuIncSubtensor{InplaceInc;1:9223372036854775807:}(GpuAlloc.0, GpuIncSubtensor{In
+   ... (remaining 202 Apply instances account for 0.87%(3.51s) of the runtime)
+
+Function profiling
+==================
+  Message: init_preconditioner
+  Time in 29 calls to Function.__call__: 1.716018e-02s
+  Time in Function.fn.__call__: 1.659441e-02s (96.703%)
+  Time in thunks: 1.614070e-02s (94.059%)
+
+Ops
+---
+<% time> <sum %> <apply time> <time per call> <type> <#call> <#apply> <Op name>
+  98.7%    98.7%       0.016s       1.10e-04s     C      145        5   GpuAlloc
+   1.0%    99.7%       0.000s       1.10e-06s     C      145        5   Shape_i{0}
+   0.3%   100.0%       0.000s       5.40e-07s     C       87        3   Shape_i{1}
+   ... (remaining 0 Ops account for   0.00%(0.00s) of the runtime)
+
+Apply
+------
+<% time> <sum %> <apply time> <time per call> <#call> <id> <Apply name>
+  34.2%    34.2%       0.006s       1.90e-04s     29    12 GpuAlloc(CudaNdarrayConstant{[[  6.63633515e-22]]}, Shape_i{0}.0, Shape_i{1}.0)
+  26.3%    60.5%       0.004s       1.47e-04s     29     9 GpuAlloc(CudaNdarrayConstant{[[  5.02961930e-14]]}, Shape_i{0}.0, Shape_i{1}.0)
+  22.1%    82.6%       0.004s       1.23e-04s     29    10 GpuAlloc(CudaNdarrayConstant{[[  1.45691835e-14]]}, Shape_i{0}.0, Shape_i{1}.0)
+   9.9%    92.5%       0.002s       5.50e-05s     29     8 GpuAlloc(CudaNdarrayConstant{[  1.70477781e-14]}, Shape_i{0}.0)
+   6.2%    98.7%       0.001s       3.46e-05s     29    11 GpuAlloc(CudaNdarrayConstant{[  1.49326623e-14]}, Shape_i{0}.0)
+   0.3%    99.1%       0.000s       1.92e-06s     29     7 Shape_i{0}(<CudaNdarrayType(float32, matrix)>)
+   0.2%    99.3%       0.000s       1.29e-06s     29     5 Shape_i{0}(<CudaNdarrayType(float32, vector)>)
+   0.2%    99.5%       0.000s       8.88e-07s     29     6 Shape_i{1}(<CudaNdarrayType(float32, matrix)>)
+   0.1%    99.6%       0.000s       7.89e-07s     29     0 Shape_i{0}(<CudaNdarrayType(float32, vector)>)
+   0.1%    99.7%       0.000s       7.73e-07s     29     2 Shape_i{0}(<CudaNdarrayType(float32, matrix)>)
+   0.1%    99.9%       0.000s       6.99e-07s     29     4 Shape_i{0}(<CudaNdarrayType(float32, matrix)>)
+   0.1%    99.9%       0.000s       3.70e-07s     29     3 Shape_i{1}(<CudaNdarrayType(float32, matrix)>)
+   0.1%   100.0%       0.000s       3.62e-07s     29     1 Shape_i{1}(<CudaNdarrayType(float32, matrix)>)
+   ... (remaining 0 Apply instances account for 0.00%(0.00s) of the runtime)
+
+Function profiling
+==================
+  Message: init_gradient
+  Time in 173 calls to Function.__call__: 8.012962e-02s
+  Time in Function.fn.__call__: 7.810807e-02s (97.477%)
+  Time in thunks: 7.601261e-02s (94.862%)
+
+Ops
+---
+<% time> <sum %> <apply time> <time per call> <type> <#call> <#apply> <Op name>
+  98.8%    98.8%       0.075s       8.68e-05s     C      865        5   GpuAlloc
+   0.8%    99.6%       0.001s       7.38e-07s     C      865        5   Shape_i{0}
+   0.4%   100.0%       0.000s       5.63e-07s     C      519        3   Shape_i{1}
+   ... (remaining 0 Ops account for   0.00%(0.00s) of the runtime)
+
+Apply
+------
+<% time> <sum %> <apply time> <time per call> <#call> <id> <Apply name>
+  32.5%    32.5%       0.025s       1.43e-04s    173     9 GpuAlloc(CudaNdarrayConstant{[[  6.63633515e-22]]}, Shape_i{0}.0, Shape_i{1}.0)
+  26.9%    59.4%       0.020s       1.18e-04s    173    10 GpuAlloc(CudaNdarrayConstant{[[  3.08392092e-14]]}, Shape_i{0}.0, Shape_i{1}.0)
+  19.8%    79.2%       0.015s       8.69e-05s    173    12 GpuAlloc(CudaNdarrayConstant{[[  2.78889054e-14]]}, Shape_i{0}.0, Shape_i{1}.0)
+  12.3%    91.5%       0.009s       5.42e-05s    173     8 GpuAlloc(CudaNdarrayConstant{[  6.10537320e-24]}, Shape_i{0}.0)
+   7.2%    98.8%       0.006s       3.18e-05s    173    11 GpuAlloc(CudaNdarrayConstant{[  2.65618351e-15]}, Shape_i{0}.0)
+   0.2%    99.0%       0.000s       1.00e-06s    173     7 Shape_i{0}(<CudaNdarrayType(float32, matrix)>)
+   0.2%    99.2%       0.000s       9.16e-07s    173     5 Shape_i{0}(<CudaNdarrayType(float32, vector)>)
+   0.2%    99.4%       0.000s       7.07e-07s    173     6 Shape_i{1}(<CudaNdarrayType(float32, matrix)>)
+   0.1%    99.5%       0.000s       6.26e-07s    173     0 Shape_i{0}(<CudaNdarrayType(float32, vector)>)
+   0.1%    99.7%       0.000s       6.24e-07s    173     2 Shape_i{0}(<CudaNdarrayType(float32, matrix)>)
+   0.1%    99.8%       0.000s       5.18e-07s    173     4 Shape_i{0}(<CudaNdarrayType(float32, matrix)>)
+   0.1%    99.9%       0.000s       5.07e-07s    173     1 Shape_i{1}(<CudaNdarrayType(float32, matrix)>)
+   0.1%   100.0%       0.000s       4.75e-07s    173     3 Shape_i{1}(<CudaNdarrayType(float32, matrix)>)
+   ... (remaining 0 Apply instances account for 0.00%(0.00s) of the runtime)
+
+Function profiling
+==================
+  Message: update_gradient_batch
+  Time in 865 calls to Function.__call__: 1.236022e+02s
+  Time in Function.fn.__call__: 1.235441e+02s (99.953%)
+  Time in thunks: 1.234395e+02s (99.868%)
+
+Ops
+---
+<% time> <sum %> <apply time> <time per call> <type> <#call> <#apply> <Op name>
+  47.0%    47.0%      58.073s       6.71e-02s     Py     865        1   for{inplace,gpu,grad_of_scan_fn}
+  24.1%    71.1%      29.700s       3.43e-02s     Py     865        1   for{inplace,gpu,scan_fn}
+  20.2%    91.3%      24.925s       2.88e-02s     Py     865        1   for{inplace,gpu,grad_of_scan_fn}
+   6.3%    97.6%       7.779s       8.99e-03s     Py     865        1   for{inplace,gpu,scan_fn}
+   0.6%    98.2%       0.688s       9.94e-05s     C     6920        8   GpuAlloc
+   0.5%    98.7%       0.633s       3.66e-04s     Py    1730        2   GpuFromHost
+   0.3%    99.0%       0.402s       4.65e-04s     Py     865        1   loadable_input
+   0.2%    99.2%       0.197s       4.56e-05s     Py    4325        5   GpuSubtensor{int64:int64:int8}
+   0.1%    99.3%       0.133s       3.07e-05s     Py    4325        5   GpuSubtensor{int64}
+   0.1%    99.4%       0.123s       1.42e-04s     Py     865        1   GpuIncSubtensor{Inc;:int64:}
+   0.1%    99.4%       0.080s       9.27e-05s     Py     865        1   <theano.tensor.basic.AdvancedIncSubtensor object at 0x17506d10>
+   0.1%    99.5%       0.073s       2.83e-05s     Py    2595        3   GpuSubtensor{::-1}
+   0.1%    99.5%       0.070s       1.62e-05s     C     4325        5   GpuElemwise{Composite{[sub(i0, mul(i1, i2))]}}[(0, 0)]
+   0.1%    99.6%       0.068s       7.89e-05s     Py     865        1   GpuIncSubtensor{InplaceSet;:int64:}
+   0.0%    99.6%       0.059s       6.84e-05s     Py     865        1   GpuIncSubtensor{InplaceInc;0:9223372036854775807:}
+   0.0%    99.7%       0.057s       6.59e-05s     Py     865        1   GpuIncSubtensor{InplaceInc;1:9223372036854775807:}
+   0.0%    99.7%       0.044s       5.12e-05s     Py     865        1   <theano.tensor.basic.AdvancedSubtensor object at 0x160de590>
+   0.0%    99.8%       0.034s       3.97e-05s     Py     865        1   HostFromGpu
+   0.0%    99.8%       0.026s       1.52e-05s     Py    1730        2   MakeVector
+   0.0%    99.8%       0.022s       2.52e-05s     Py     865        1   GpuReshape{3}
+   ... (remaining 73 Ops account for   0.20%(0.25s) of the runtime)
+
+Apply
+------
+<% time> <sum %> <apply time> <time per call> <#call> <id> <Apply name>
+  47.0%    47.0%      58.073s       6.71e-02s    865   194 for{inplace,gpu,grad_of_scan_fn}(Elemwise{Composite{[Composite{[Composite{[minimu
+  24.1%    71.1%      29.700s       3.43e-02s    865   141 for{inplace,gpu,scan_fn}(Elemwise{Composite{[Composite{[Composite{[minimum(maximu
+  20.2%    91.3%      24.925s       2.88e-02s    865   182 for{inplace,gpu,grad_of_scan_fn}(Elemwise{Switch{output_types_preference=transfer
+   6.3%    97.6%       7.779s       8.99e-03s    865   149 for{inplace,gpu,scan_fn}(Elemwise{Switch{output_types_preference=transfer_type{2}
+   0.5%    98.1%       0.598s       6.92e-04s    865    18 GpuFromHost(loadable_input.0)
+   0.3%    98.4%       0.402s       4.65e-04s    865     0 loadable_input(index)
+   0.1%    98.5%       0.137s       1.59e-04s    865   132 GpuAlloc(CudaNdarrayConstant{[[[ 0.]]]}, Elemwise{Composite{[Composite{[add(maxim
+   0.1%    98.6%       0.127s       1.47e-04s    865    31 GpuAlloc(CudaNdarrayConstant{[[[  5.50991544e-14]]]}, Elemwise{add,no_inplace}.0,
+   0.1%    98.7%       0.125s       1.44e-04s    865    74 GpuAlloc(CudaNdarrayConstant{[[[  1.39717881e-13]]]}, Elemwise{Composite{[Composi
+   0.1%    98.8%       0.123s       1.42e-04s    865   188 GpuIncSubtensor{Inc;:int64:}(GpuAlloc.0, GpuSubtensor{::-1}.0, ScalarFromTensor.0
+   0.1%    98.9%       0.123s       1.42e-04s    865    69 GpuAlloc(CudaNdarrayConstant{[[[  6.63633515e-22]]]}, Elemwise{Switch{output_type
+   0.1%    99.0%       0.105s       1.22e-04s    865    75 GpuAlloc(CudaNdarrayConstant{[[[  5.87275390e-25]]]}, Elemwise{Composite{[Composi
+   0.1%    99.1%       0.080s       9.27e-05s    865   164 <theano.tensor.basic.AdvancedIncSubtensor object at 0x17506d10>(Alloc.0, Alloc.0,
+   0.1%    99.1%       0.069s       7.95e-05s    865    72 GpuSubtensor{int64:int64:int8}(GpuFromHost.0, ScalarFromTensor.0, ScalarFromTenso
+   0.1%    99.2%       0.068s       7.89e-05s    865   138 GpuIncSubtensor{InplaceSet;:int64:}(GpuAlloc.0, Rebroadcast{0}.0, Constant{1})
+   0.0%    99.2%       0.059s       6.84e-05s    865   191 GpuIncSubtensor{InplaceInc;0:9223372036854775807:}(GpuAlloc.0, GpuIncSubtensor{In
+   0.0%    99.3%       0.057s       6.59e-05s    865   192 GpuIncSubtensor{InplaceInc;1:9223372036854775807:}(GpuAlloc.0, GpuIncSubtensor{In
+   0.0%    99.3%       0.047s       5.46e-05s    865    97 GpuAlloc(CudaNdarrayConstant{[[[  1.44245781e-14]]]}, Elemwise{Composite{[Composi
+   0.0%    99.4%       0.044s       5.12e-05s    865   181 <theano.tensor.basic.AdvancedSubtensor object at 0x160de590>(HostFromGpu.0, ARang
+   0.0%    99.4%       0.040s       4.61e-05s    865   146 GpuSubtensor{int64:int64:int8}(for{inplace,gpu,scan_fn}.0, ScalarFromTensor.0, Sc
+   ... (remaining 181 Apply instances account for 0.61%(0.76s) of the runtime)
+
+Function profiling
+==================
+  Message: lcg_update_x
+  Time in 1068 calls to Function.__call__: 3.992338e+02s
+  Time in Function.fn.__call__: 3.991531e+02s (99.980%)
+  Time in thunks: 3.989891e+02s (99.939%)
+
+Ops
+---
+<% time> <sum %> <apply time> <time per call> <type> <#call> <#apply> <Op name>
+  43.1%    43.1%     171.839s       1.61e-01s     Py    1068        1   for{inplace,gpu,scan_fn&rop_of_scan_fn&rop_of_scan_fn}
+  27.6%    70.6%     109.975s       1.03e-01s     Py    1068        1   for{inplace,gpu,grad_of_scan_fn&grad_of_scan_fn}
+  14.5%    85.1%      57.772s       5.41e-02s     Py    1068        1   for{inplace,gpu,grad_of_scan_fn&grad_of_scan_fn}
+  13.2%    98.3%      52.760s       4.94e-02s     Py    1068        1   for{inplace,gpu,scan_fn&rop_of_scan_fn&rop_of_scan_fn}
+   0.4%    98.7%       1.641s       1.18e-04s     C     13884       13   GpuAlloc
+   0.2%    98.9%       0.806s       2.52e-04s     Py    3204        3   GpuFromHost
+   0.1%    99.1%       0.488s       4.57e-04s     Py    1068        1   loadable_input
+   0.1%    99.2%       0.440s       4.58e-05s     C     9612        9   GpuSum{1,1}
+   0.1%    99.3%       0.316s       1.48e-04s     Py    2136        2   GpuIncSubtensor{Inc;:int64:}
+   0.1%    99.3%       0.287s       3.84e-05s     Py    7476        7   GpuSubtensor{int64:int64:int8}
+   0.1%    99.4%       0.260s       4.87e-05s     C     5340        5   DeepCopyOp
+   0.1%    99.5%       0.249s       2.33e-05s     Py    10680       10   GpuSubtensor{int64}
+   0.0%    99.5%       0.185s       2.89e-05s     Py    6408        6   GpuSubtensor{::-1}
+   0.0%    99.6%       0.176s       8.22e-05s     Py    2136        2   GpuIncSubtensor{InplaceSet;:int64:}
+   0.0%    99.6%       0.136s       2.55e-05s     C     5340        5   GpuElemwise{Composite{[true_div(sqr(i0), i1)]}}[(0, 0)]
+   0.0%    99.6%       0.133s       1.24e-04s     Py    1068        1   GpuIncSubtensor{Inc;0:9223372036854775807:}
+   0.0%    99.7%       0.131s       1.23e-04s     Py    1068        1   GpuIncSubtensor{Inc;1:9223372036854775807:}
+   0.0%    99.7%       0.110s       2.06e-05s     C     5340        5   GpuElemwise{Composite{[mul(add(i0, i1), i1)]}}[(0, 0)]
+   0.0%    99.7%       0.099s       9.29e-05s     Py    1068        1   <theano.tensor.basic.AdvancedIncSubtensor object at 0x1f453a10>
+   0.0%    99.7%       0.095s       1.78e-05s     C     5340        5   GpuElemwise{Composite{[sub(i0, add(i1, i2))]}}[(0, 1)]
+   ... (remaining 87 Ops account for   0.27%(1.09s) of the runtime)
+
+Apply
+------
+<% time> <sum %> <apply time> <time per call> <#call> <id> <Apply name>
+  43.1%    43.1%     171.839s       1.61e-01s   1068   178 for{inplace,gpu,scan_fn&rop_of_scan_fn&rop_of_scan_fn}(Elemwise{Composite{[Compos
+  27.6%    70.6%     109.975s       1.03e-01s   1068   254 for{inplace,gpu,grad_of_scan_fn&grad_of_scan_fn}(Elemwise{Composite{[Composite{[C
+  14.5%    85.1%      57.772s       5.41e-02s   1068   225 for{inplace,gpu,grad_of_scan_fn&grad_of_scan_fn}(Elemwise{Switch{output_types_pre
+  13.2%    98.3%      52.760s       4.94e-02s   1068   187 for{inplace,gpu,scan_fn&rop_of_scan_fn&rop_of_scan_fn}(Elemwise{Switch{output_typ
+   0.2%    98.5%       0.734s       6.87e-04s   1068    24 GpuFromHost(loadable_input.0)
+   0.1%    98.6%       0.488s       4.57e-04s   1068     0 loadable_input(index)
+   0.1%    98.7%       0.377s       3.53e-04s   1068   105 GpuAlloc(CudaNdarrayConstant{[[[  2.56224892e-14]]]}, Elemwise{Composite{[Composi
+   0.0%    98.8%       0.159s       1.49e-04s   1068   233 GpuIncSubtensor{Inc;:int64:}(GpuAlloc.0, GpuSubtensor{::-1}.0, ScalarFromTensor.0
+   0.0%    98.8%       0.159s       1.49e-04s   1068    41 GpuAlloc(CudaNdarrayConstant{[[[  6.63633515e-22]]]}, Elemwise{add,no_inplace}.0,
+   0.0%    98.9%       0.158s       1.47e-04s   1068   167 GpuAlloc(CudaNdarrayConstant{[[[  2.32883916e-14]]]}, Elemwise{Composite{[Composi
+   0.0%    98.9%       0.158s       1.47e-04s   1068   234 GpuIncSubtensor{Inc;:int64:}(GpuAlloc.0, GpuSubtensor{::-1}.0, ScalarFromTensor.0
+   0.0%    98.9%       0.157s       1.47e-04s   1068   150 GpuAlloc(CudaNdarrayConstant{[[[  6.63633515e-22]]]}, Elemwise{Composite{[Composi
+   0.0%    99.0%       0.153s       1.43e-04s   1068    72 GpuAlloc(CudaNdarrayConstant{[[[  9.23114177e-21]]]}, Elemwise{Switch{output_type
+   0.0%    99.0%       0.152s       1.42e-04s   1068    76 GpuAlloc(CudaNdarrayConstant{[[[  3.02492406e-15]]]}, Elemwise{Composite{[Composi
+   0.0%    99.0%       0.147s       1.38e-04s   1068   171 GpuAlloc(CudaNdarrayConstant{[[[  6.63633515e-22]]]}, Elemwise{Composite{[Composi
+   0.0%    99.1%       0.135s       1.26e-04s   1068   169 GpuAlloc(CudaNdarrayConstant{[[[  6.63633515e-22]]]}, Elemwise{Composite{[Composi
+   0.0%    99.1%       0.133s       1.24e-04s   1068   239 GpuIncSubtensor{Inc;0:9223372036854775807:}(GpuAlloc.0, GpuIncSubtensor{Inc;:int6
+   0.0%    99.1%       0.131s       1.23e-04s   1068   247 GpuIncSubtensor{Inc;1:9223372036854775807:}(GpuAlloc.0, GpuIncSubtensor{Inc;0:922
+   0.0%    99.2%       0.127s       1.19e-04s   1068   277 GpuSum{1,1}(GpuElemwise{Composite{[mul(add(i0, i1), i2)]},no_inplace}.0)
+   0.0%    99.2%       0.112s       1.05e-04s   1068   158 GpuIncSubtensor{InplaceSet;:int64:}(GpuAlloc.0, Rebroadcast{0}.0, Constant{1})
+   ... (remaining 272 Apply instances account for 0.79%(3.16s) of the runtime)
+
+Function profiling
+==================
+  Message: lcg_update_direction
+  Time in 1067 calls to Function.__call__: 2.593650e+02s
+  Time in Function.fn.__call__: 2.592890e+02s (99.971%)
+  Time in thunks: 2.591401e+02s (99.913%)
+
+Ops
+---
+<% time> <sum %> <apply time> <time per call> <type> <#call> <#apply> <Op name>
+  46.2%    46.2%     119.602s       1.12e-01s     Py    1067        1   for{inplace,gpu,scan_fn&rop_of_scan_fn}
+  27.7%    73.8%      71.763s       6.73e-02s     Py    1067        1   for{inplace,gpu,grad_of_scan_fn}
+  12.3%    86.1%      31.792s       2.98e-02s     Py    1067        1   for{inplace,gpu,scan_fn&rop_of_scan_fn}
+  12.0%    98.1%      31.157s       2.92e-02s     Py    1067        1   for{inplace,gpu,grad_of_scan_fn}
+   0.6%    98.8%       1.614s       1.38e-04s     C     11737       11   GpuAlloc
+   0.3%    99.1%       0.779s       3.65e-04s     Py    2134        2   GpuFromHost
+   0.2%    99.3%       0.490s       4.59e-04s     Py    1067        1   loadable_input
+   0.1%    99.4%       0.264s       4.12e-05s     Py    6402        6   GpuSubtensor{int64:int64:int8}
+   0.1%    99.4%       0.170s       5.32e-05s     C     3201        3   GpuSum{1,1}
+   0.1%    99.5%       0.161s       1.51e-04s     Py    1067        1   GpuIncSubtensor{Inc;:int64:}
+   0.1%    99.5%       0.152s       7.13e-05s     Py    2134        2   GpuIncSubtensor{InplaceSet;:int64:}
+   0.1%    99.6%       0.131s       2.46e-05s     Py    5335        5   GpuSubtensor{int64}
+   0.0%    99.6%       0.099s       9.26e-05s     Py    1067        1   <theano.tensor.basic.AdvancedIncSubtensor object at 0x1f1fef50>
+   0.0%    99.7%       0.098s       3.05e-05s     Py    3201        3   GpuSubtensor{::-1}
+   0.0%    99.7%       0.094s       1.76e-05s     C     5335        5   GpuElemwise{Composite{[sub(i0, add(i1, i2))]}}[(0, 1)]
+   0.0%    99.7%       0.074s       1.39e-05s     C     5335        5   GpuElemwise{Composite{[add(true_div(i0, i1), mul(i2, i3))]}}[(0, 0)]
+   0.0%    99.8%       0.072s       1.35e-05s     C     5335        5   GpuElemwise{Composite{[true_div(sqr(i0), i1)]},no_inplace}
+   0.0%    99.8%       0.072s       6.73e-05s     Py    1067        1   GpuIncSubtensor{InplaceInc;0:9223372036854775807:}
+   0.0%    99.8%       0.070s       6.61e-05s     Py    1067        1   GpuIncSubtensor{InplaceInc;1:9223372036854775807:}
+   0.0%    99.8%       0.055s       2.59e-05s     Py    2134        2   GpuReshape{2}
+   ... (remaining 79 Ops account for   0.17%(0.43s) of the runtime)
+
+Apply
+------
+<% time> <sum %> <apply time> <time per call> <#call> <id> <Apply name>
+  46.2%    46.2%     119.602s       1.12e-01s   1067   167 for{inplace,gpu,scan_fn&rop_of_scan_fn}(Elemwise{Composite{[Composite{[Composite{
+  27.7%    73.8%      71.763s       6.73e-02s   1067   219 for{inplace,gpu,grad_of_scan_fn}(Elemwise{Composite{[Composite{[Composite{[minimu
+  12.3%    86.1%      31.792s       2.98e-02s   1067   175 for{inplace,gpu,scan_fn&rop_of_scan_fn}(Elemwise{Switch{output_types_preference=t
+  12.0%    98.1%      31.157s       2.92e-02s   1067   205 for{inplace,gpu,grad_of_scan_fn}(Elemwise{Switch{output_types_preference=transfer
+   0.3%    98.4%       0.741s       6.95e-04s   1067    22 GpuFromHost(loadable_input.0)
+   0.2%    98.6%       0.490s       4.59e-04s   1067     0 loadable_input(index)
+   0.1%    98.8%       0.386s       3.61e-04s   1067   102 GpuAlloc(CudaNdarrayConstant{[[[  2.78644837e-14]]]}, Elemwise{Composite{[Composi
+   0.1%    98.8%       0.180s       1.69e-04s   1067    73 GpuAlloc(CudaNdarrayConstant{[[[  6.63633515e-22]]]}, Elemwise{Composite{[Composi
+   0.1%    98.9%       0.171s       1.60e-04s   1067   164 GpuAlloc(CudaNdarrayConstant{[[[  6.63633515e-22]]]}, Elemwise{Composite{[Composi
+   0.1%    99.0%       0.161s       1.51e-04s   1067   209 GpuIncSubtensor{Inc;:int64:}(GpuAlloc.0, GpuSubtensor{::-1}.0, ScalarFromTensor.0
+   0.1%    99.0%       0.158s       1.48e-04s   1067   145 GpuAlloc(CudaNdarrayConstant{[[[  6.63633515e-22]]]}, Elemwise{Composite{[Composi
+   0.1%    99.1%       0.157s       1.47e-04s   1067    39 GpuAlloc(CudaNdarrayConstant{[[[  2.19055731e-14]]]}, Elemwise{add,no_inplace}.0,
+   0.1%    99.1%       0.154s       1.44e-04s   1067   162 GpuAlloc(CudaNdarrayConstant{[[[  3.51399140e-14]]]}, Elemwise{Composite{[Composi
+   0.1%    99.2%       0.153s       1.43e-04s   1067    70 GpuAlloc(CudaNdarrayConstant{[[[  6.63633515e-22]]]}, Elemwise{Switch{output_type
+   0.0%    99.2%       0.121s       1.14e-04s   1067   230 GpuSum{1,1}(GpuElemwise{Composite{[true_div(sqr(i0), i1)]},no_inplace}.0)
+   0.0%    99.3%       0.105s       9.83e-05s   1067   101 GpuAlloc(CudaNdarrayConstant{[[[  8.19092771e-18]]]}, Elemwise{Composite{[Composi
+   0.0%    99.3%       0.099s       9.26e-05s   1067   193 <theano.tensor.basic.AdvancedIncSubtensor object at 0x1f1fef50>(Alloc.0, Alloc.0,
+   0.0%    99.4%       0.089s       8.33e-05s   1067   153 GpuIncSubtensor{InplaceSet;:int64:}(GpuAlloc.0, Rebroadcast{0}.0, Constant{1})
+   0.0%    99.4%       0.087s       8.17e-05s   1067   103 GpuSubtensor{int64:int64:int8}(GpuFromHost.0, ScalarFromTensor.0, ScalarFromTenso
+   0.0%    99.4%       0.072s       6.73e-05s   1067   212 GpuIncSubtensor{InplaceInc;0:9223372036854775807:}(GpuAlloc.0, GpuIncSubtensor{In
+   ... (remaining 221 Apply instances account for 0.58%(1.50s) of the runtime)
+
+Function profiling
+==================
+  Message: lcg_step
+  Time in 107 calls to Function.__call__: 2.599215e+01s
+  Time in Function.fn.__call__: 2.598501e+01s (99.973%)
+  Time in thunks: 2.596366e+01s (99.890%)
+
+Ops
+---
+<% time> <sum %> <apply time> <time per call> <type> <#call> <#apply> <Op name>
+  46.5%    46.5%      12.070s       1.13e-01s     Py     107        1   for{inplace,gpu,scan_fn&rop_of_scan_fn}
+  27.8%    74.3%       7.225s       6.75e-02s     Py     107        1   for{inplace,gpu,grad_of_scan_fn}
+  12.0%    86.4%       3.127s       2.92e-02s     Py     107        1   for{inplace,gpu,scan_fn&rop_of_scan_fn}
+  11.8%    98.1%       3.059s       2.86e-02s     Py     107        1   for{inplace,gpu,grad_of_scan_fn}
+   0.6%    98.7%       0.143s       1.22e-04s     C     1177       11   GpuAlloc
+   0.3%    99.0%       0.078s       3.66e-04s     Py     214        2   GpuFromHost
+   0.2%    99.2%       0.053s       4.92e-04s     Py     107        1   loadable_input
+   0.1%    99.3%       0.026s       4.11e-05s     Py     642        6   GpuSubtensor{int64:int64:int8}
+   0.1%    99.4%       0.019s       3.46e-05s     C      535        5   GpuElemwise{true_div,no_inplace}
+   0.1%    99.4%       0.018s       1.69e-04s     Py     107        1   GpuIncSubtensor{Inc;:int64:}
+   0.1%    99.5%       0.015s       7.13e-05s     Py     214        2   GpuIncSubtensor{InplaceSet;:int64:}
+   0.1%    99.6%       0.015s       4.70e-05s     C      321        3   GpuSum{1,1}
+   0.1%    99.6%       0.015s       2.81e-05s     Py     535        5   GpuSubtensor{int64}
+   0.0%    99.7%       0.010s       3.21e-05s     Py     321        3   GpuSubtensor{::-1}
+   0.0%    99.7%       0.010s       1.86e-05s     C      535        5   GpuElemwise{Composite{[true_div(sqr(i0), i1)]}}[(0, 0)]
+   0.0%    99.7%       0.010s       9.20e-05s     Py     107        1   <theano.tensor.basic.AdvancedIncSubtensor object at 0x1f1fef50>
+   0.0%    99.8%       0.010s       1.79e-05s     C      535        5   GpuElemwise{Composite{[sub(i0, add(i1, i2))]}}[(0, 1)]
+   0.0%    99.8%       0.007s       6.74e-05s     Py     107        1   GpuIncSubtensor{InplaceInc;1:9223372036854775807:}
+   0.0%    99.8%       0.007s       6.69e-05s     Py     107        1   GpuIncSubtensor{InplaceInc;0:9223372036854775807:}
+   0.0%    99.8%       0.005s       2.53e-05s     Py     214        2   GpuReshape{2}
+   ... (remaining 76 Ops account for   0.15%(0.04s) of the runtime)
+
+Apply
+------
+<% time> <sum %> <apply time> <time per call> <#call> <id> <Apply name>
+  46.5%    46.5%      12.070s       1.13e-01s    107   167 for{inplace,gpu,scan_fn&rop_of_scan_fn}(Elemwise{Composite{[Composite{[Composite{
+  27.8%    74.3%       7.225s       6.75e-02s    107   221 for{inplace,gpu,grad_of_scan_fn}(Elemwise{Composite{[Composite{[Composite{[minimu
+  12.0%    86.4%       3.127s       2.92e-02s    107   175 for{inplace,gpu,scan_fn&rop_of_scan_fn}(Elemwise{Switch{output_types_preference=t
+  11.8%    98.1%       3.059s       2.86e-02s    107   205 for{inplace,gpu,grad_of_scan_fn}(Elemwise{Switch{output_types_preference=transfer
+   0.3%    98.4%       0.074s       6.96e-04s    107    22 GpuFromHost(loadable_input.0)
+   0.2%    98.6%       0.053s       4.92e-04s    107     0 loadable_input(index)
+   0.1%    98.8%       0.039s       3.61e-04s    107   102 GpuAlloc(CudaNdarrayConstant{[[[  2.09863515e-11]]]}, Elemwise{Composite{[Composi
+   0.1%    98.9%       0.018s       1.69e-04s    107   209 GpuIncSubtensor{Inc;:int64:}(GpuAlloc.0, GpuSubtensor{::-1}.0, ScalarFromTensor.0
+   0.1%    98.9%       0.016s       1.50e-04s    107   145 GpuAlloc(CudaNdarrayConstant{[[[  6.63633515e-22]]]}, Elemwise{Composite{[Composi
+   0.1%    99.0%       0.016s       1.48e-04s    107    39 GpuAlloc(CudaNdarrayConstant{[[[  1.86707594e-11]]]}, Elemwise{add,no_inplace}.0,
+   0.1%    99.0%       0.015s       1.44e-04s    107    70 GpuAlloc(CudaNdarrayConstant{[[[  1.17477278e-11]]]}, Elemwise{Switch{output_type
+   0.1%    99.1%       0.015s       1.44e-04s    107   162 GpuAlloc(CudaNdarrayConstant{[[[  1.68823492e-15]]]}, Elemwise{Composite{[Composi
+   0.1%    99.2%       0.015s       1.42e-04s    107    73 GpuAlloc(CudaNdarrayConstant{[[[  6.63633515e-22]]]}, Elemwise{Composite{[Composi
+   0.1%    99.2%       0.013s       1.22e-04s    107   164 GpuAlloc(CudaNdarrayConstant{[[[  6.63633515e-22]]]}, Elemwise{Composite{[Composi
+   0.0%    99.2%       0.010s       9.66e-05s    107   235 GpuSum{1,1}(GpuElemwise{Composite{[true_div(sqr(i0), i1)]}}[(0, 0)].0)
+   0.0%    99.3%       0.010s       9.20e-05s    107   193 <theano.tensor.basic.AdvancedIncSubtensor object at 0x1f1fef50>(Alloc.0, Alloc.0,
+   0.0%    99.3%       0.009s       8.45e-05s    107   103 GpuSubtensor{int64:int64:int8}(GpuFromHost.0, ScalarFromTensor.0, ScalarFromTenso
+   0.0%    99.3%       0.009s       8.13e-05s    107   153 GpuIncSubtensor{InplaceSet;:int64:}(GpuAlloc.0, Rebroadcast{0}.0, Constant{1})
+   0.0%    99.4%       0.007s       6.74e-05s    107   217 GpuIncSubtensor{InplaceInc;1:9223372036854775807:}(GpuAlloc.0, GpuIncSubtensor{In
+   0.0%    99.4%       0.007s       6.69e-05s    107   212 GpuIncSubtensor{InplaceInc;0:9223372036854775807:}(GpuAlloc.0, GpuIncSubtensor{In
+   ... (remaining 218 Apply instances account for 0.60%(0.16s) of the runtime)
+
+Function profiling
+==================
+  Message: norm_step
+  Time in 107 calls to Function.__call__: 3.008580e-02s
+  Time in Function.fn.__call__: 2.869868e-02s (95.389%)
+  Time in thunks: 2.775073e-02s (92.239%)
+
+Ops
+---
+<% time> <sum %> <apply time> <time per call> <type> <#call> <#apply> <Op name>
+  51.0%    51.0%       0.014s       4.40e-05s     C      321        3   GpuSum{1,1}
+  26.3%    77.2%       0.007s       1.36e-05s     C      535        5   GpuElemwise{sqr,no_inplace}
+  10.4%    87.6%       0.003s       2.69e-05s     Py     107        1   HostFromGpu
+   8.0%    95.6%       0.002s       1.03e-05s     C      214        2   GpuSum{1}
+   4.4%   100.0%       0.001s       1.14e-05s     C      107        1   GpuElemwise{Composite{[Composite{[Composite{[add(add(i0, i1), i2)]}(ad
+   ... (remaining 0 Ops account for   0.00%(0.00s) of the runtime)
+
+Apply
+------
+<% time> <sum %> <apply time> <time per call> <#call> <id> <Apply name>
+  37.6%    37.6%       0.010s       9.76e-05s    107     6 GpuSum{1,1}(GpuElemwise{sqr,no_inplace}.0)
+  10.4%    48.0%       0.003s       2.69e-05s    107    11 HostFromGpu(GpuElemwise{Composite{[Composite{[Composite{[add(add(i0, i1), i2)]}(a
+   8.0%    56.0%       0.002s       2.07e-05s    107     7 GpuSum{1,1}(GpuElemwise{sqr,no_inplace}.0)
+   7.4%    63.5%       0.002s       1.93e-05s    107     4 GpuElemwise{sqr,no_inplace}(<CudaNdarrayType(float32, matrix)>)
+   6.5%    69.9%       0.002s       1.68e-05s    107     1 GpuElemwise{sqr,no_inplace}(<CudaNdarrayType(float32, matrix)>)
+   5.3%    75.3%       0.001s       1.38e-05s    107     9 GpuSum{1,1}(GpuElemwise{sqr,no_inplace}.0)
+   4.5%    79.7%       0.001s       1.16e-05s    107     3 GpuElemwise{sqr,no_inplace}(<CudaNdarrayType(float32, vector)>)
+   4.4%    84.1%       0.001s       1.14e-05s    107    10 GpuElemwise{Composite{[Composite{[Composite{[add(add(i0, i1), i2)]}(add(i0, i1), 
+   4.0%    88.2%       0.001s       1.05e-05s    107     8 GpuSum{1}(GpuElemwise{sqr,no_inplace}.0)
+   4.0%    92.2%       0.001s       1.03e-05s    107     0 GpuElemwise{sqr,no_inplace}(<CudaNdarrayType(float32, vector)>)
+   3.9%    96.1%       0.001s       1.02e-05s    107     5 GpuSum{1}(GpuElemwise{sqr,no_inplace}.0)
+   3.9%   100.0%       0.001s       1.02e-05s    107     2 GpuElemwise{sqr,no_inplace}(<CudaNdarrayType(float32, matrix)>)
+   ... (remaining 0 Apply instances account for 0.00%(0.00s) of the runtime)
+
+Function profiling
+==================
+  Message: init_lcg
+  Time in 79 calls to Function.__call__: 4.656887e-02s
+  Time in Function.fn.__call__: 4.499531e-02s (96.621%)
+  Time in thunks: 4.395604e-02s (94.389%)
+
+Ops
+---
+<% time> <sum %> <apply time> <time per call> <type> <#call> <#apply> <Op name>
+  98.7%    98.7%       0.043s       1.10e-04s     C      395        5   GpuAlloc
+   1.0%    99.7%       0.000s       1.09e-06s     C      395        5   Shape_i{0}
+   0.3%   100.0%       0.000s       5.54e-07s     C      237        3   Shape_i{1}
+   ... (remaining 0 Ops account for   0.00%(0.00s) of the runtime)
+
+Apply
+------
+<% time> <sum %> <apply time> <time per call> <#call> <id> <Apply name>
+  34.8%    34.8%       0.015s       1.94e-04s     79    12 GpuAlloc(CudaNdarrayConstant{[[  6.63633515e-22]]}, Shape_i{0}.0, Shape_i{1}.0)
+  25.8%    60.7%       0.011s       1.44e-04s     79     9 GpuAlloc(CudaNdarrayConstant{[[  2.48316721e-14]]}, Shape_i{0}.0, Shape_i{1}.0)
+  23.0%    83.6%       0.010s       1.28e-04s     79    10 GpuAlloc(CudaNdarrayConstant{[[  1.69239351e-14]]}, Shape_i{0}.0, Shape_i{1}.0)
+   8.4%    92.0%       0.004s       4.66e-05s     79     8 GpuAlloc(CudaNdarrayConstant{[  5.42647524e-14]}, Shape_i{0}.0)
+   6.7%    98.7%       0.003s       3.72e-05s     79    11 GpuAlloc(CudaNdarrayConstant{[  4.29294187e-14]}, Shape_i{0}.0)
+   0.3%    99.1%       0.000s       1.87e-06s     79     7 Shape_i{0}(<CudaNdarrayType(float32, matrix)>)
+   0.3%    99.3%       0.000s       1.41e-06s     79     5 Shape_i{0}(<CudaNdarrayType(float32, vector)>)
+   0.1%    99.5%       0.000s       8.21e-07s     79     6 Shape_i{1}(<CudaNdarrayType(float32, matrix)>)
+   0.1%    99.6%       0.000s       7.97e-07s     79     4 Shape_i{0}(<CudaNdarrayType(float32, matrix)>)
+   0.1%    99.7%       0.000s       7.21e-07s     79     0 Shape_i{0}(<CudaNdarrayType(float32, vector)>)
+   0.1%    99.8%       0.000s       6.67e-07s     79     2 Shape_i{0}(<CudaNdarrayType(float32, matrix)>)
+   0.1%    99.9%       0.000s       5.25e-07s     79     1 Shape_i{1}(<CudaNdarrayType(float32, matrix)>)
+   0.1%   100.0%       0.000s       3.17e-07s     79     3 Shape_i{1}(<CudaNdarrayType(float32, matrix)>)
+   ... (remaining 0 Apply instances account for 0.00%(0.00s) of the runtime)
+
+Function profiling
+==================
+  Message: update_params
+  Time in 93 calls to Function.__call__: 9.332418e-03s
+  Time in Function.fn.__call__: 7.933378e-03s (85.009%)
+  Time in thunks: 7.266045e-03s (77.858%)
+
+Ops
+---
+<% time> <sum %> <apply time> <time per call> <type> <#call> <#apply> <Op name>
+  100.0%   100.0%       0.007s       1.56e-05s     C      465        5   GpuElemwise{Add{output_types_preference=transfer_type{0}, _op_use_c_co
+   ... (remaining 0 Ops account for   0.00%(0.00s) of the runtime)
+
+Apply
+------
+<% time> <sum %> <apply time> <time per call> <#call> <id> <Apply name>
+  29.6%    29.6%       0.002s       2.31e-05s     93     4 GpuElemwise{Add{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  26.3%    55.9%       0.002s       2.06e-05s     93     1 GpuElemwise{Add{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  19.9%    75.8%       0.001s       1.55e-05s     93     3 GpuElemwise{Add{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  13.6%    89.4%       0.001s       1.06e-05s     93     2 GpuElemwise{Add{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  10.6%   100.0%       0.001s       8.29e-06s     93     0 GpuElemwise{Add{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+   ... (remaining 0 Apply instances account for 0.00%(0.00s) of the runtime)
+
+Function profiling
+==================
+  Message: backtrack_params
+  Time in 79 calls to Function.__call__: 6.750345e-03s
+  Time in Function.fn.__call__: 5.718470e-03s (84.714%)
+  Time in thunks: 5.130529e-03s (76.004%)
+
+Ops
+---
+<% time> <sum %> <apply time> <time per call> <type> <#call> <#apply> <Op name>
+  100.0%   100.0%       0.005s       1.30e-05s     C      395        5   GpuElemwise{Sub{output_types_preference=transfer_type{0}, _op_use_c_co
+   ... (remaining 0 Ops account for   0.00%(0.00s) of the runtime)
+
+Apply
+------
+<% time> <sum %> <apply time> <time per call> <#call> <id> <Apply name>
+  28.4%    28.4%       0.001s       1.85e-05s     79     1 GpuElemwise{Sub{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  27.5%    56.0%       0.001s       1.79e-05s     79     4 GpuElemwise{Sub{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  16.2%    72.2%       0.001s       1.05e-05s     79     3 GpuElemwise{Sub{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  15.3%    87.5%       0.001s       9.93e-06s     79     2 GpuElemwise{Sub{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  12.5%   100.0%       0.001s       8.15e-06s     79     0 GpuElemwise{Sub{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+   ... (remaining 0 Apply instances account for 0.00%(0.00s) of the runtime)
+
+Function profiling
+==================
+  Message: gauss_grad_NAN_check
+  Time in 93 calls to Function.__call__: 2.423167e-02s
+  Time in Function.fn.__call__: 1.963162e-02s (81.016%)
+  Time in thunks: 1.899743e-02s (78.399%)
+
+Ops
+---
+<% time> <sum %> <apply time> <time per call> <type> <#call> <#apply> <Op name>
+  72.9%    72.9%       0.014s       4.96e-05s     C      279        3   GpuSum{1,1}
+  11.0%    83.8%       0.002s       2.24e-05s     Py      93        1   HostFromGpu
+  10.9%    94.7%       0.002s       1.11e-05s     C      186        2   GpuSum{1}
+   5.3%   100.0%       0.001s       1.08e-05s     C       93        1   GpuElemwise{Add{output_types_preference=transfer_type{0}, _op_use_c_co
+   ... (remaining 0 Ops account for   0.00%(0.00s) of the runtime)
+
+Apply
+------
+<% time> <sum %> <apply time> <time per call> <#call> <id> <Apply name>
+  50.4%    50.4%       0.010s       1.03e-04s     93     1 GpuSum{1,1}(<CudaNdarrayType(float32, matrix)>)
+  12.4%    62.8%       0.002s       2.54e-05s     93     2 GpuSum{1,1}(<CudaNdarrayType(float32, matrix)>)
+  11.0%    73.8%       0.002s       2.24e-05s     93     6 HostFromGpu(GpuElemwise{Add{output_types_preference=transfer_type{0}, _op_use_c_c
+  10.1%    83.8%       0.002s       2.06e-05s     93     4 GpuSum{1,1}(<CudaNdarrayType(float32, matrix)>)
+   5.8%    89.6%       0.001s       1.18e-05s     93     3 GpuSum{1}(<CudaNdarrayType(float32, vector)>)
+   5.3%    94.9%       0.001s       1.08e-05s     93     5 GpuElemwise{Add{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+   5.1%   100.0%       0.001s       1.04e-05s     93     0 GpuSum{1}(<CudaNdarrayType(float32, vector)>)
+   ... (remaining 0 Apply instances account for 0.00%(0.00s) of the runtime)
+
+Function profiling
+==================
+  Message: precond_martens
+  Time in 1 calls to Function.__call__: 1.080036e-04s
+  Time in Function.fn.__call__: 9.799004e-05s (90.728%)
+  Time in thunks: 9.131432e-05s (84.547%)
+
+Ops
+---
+<% time> <sum %> <apply time> <time per call> <type> <#call> <#apply> <Op name>
+  100.0%   100.0%       0.000s       1.83e-05s     C        5        5   GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_co
+   ... (remaining 0 Ops account for   0.00%(0.00s) of the runtime)
+
+Apply
+------
+<% time> <sum %> <apply time> <time per call> <#call> <id> <Apply name>
+  39.4%    39.4%       0.000s       3.60e-05s      1     1 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  25.3%    64.8%       0.000s       2.31e-05s      1     4 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  13.3%    78.1%       0.000s       1.22e-05s      1     2 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  12.0%    90.1%       0.000s       1.10e-05s      1     3 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+   9.9%   100.0%       0.000s       9.06e-06s      1     0 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+   ... (remaining 0 Apply instances account for 0.00%(0.00s) of the runtime)
+
+Function profiling
+==================
+  Message: precond_martens
+  Time in 1 calls to Function.__call__: 1.130104e-04s
+  Time in Function.fn.__call__: 1.029968e-04s (91.139%)
+  Time in thunks: 9.894371e-05s (87.553%)
+
+Ops
+---
+<% time> <sum %> <apply time> <time per call> <type> <#call> <#apply> <Op name>
+  100.0%   100.0%       0.000s       1.98e-05s     C        5        5   GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_co
+   ... (remaining 0 Ops account for   0.00%(0.00s) of the runtime)
+
+Apply
+------
+<% time> <sum %> <apply time> <time per call> <#call> <id> <Apply name>
+  36.4%    36.4%       0.000s       3.60e-05s      1     1 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  27.2%    63.6%       0.000s       2.69e-05s      1     4 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  13.3%    76.9%       0.000s       1.31e-05s      1     3 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  13.0%    89.9%       0.000s       1.29e-05s      1     2 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  10.1%   100.0%       0.000s       1.00e-05s      1     0 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+   ... (remaining 0 Apply instances account for 0.00%(0.00s) of the runtime)
+
+Function profiling
+==================
+  Message: precond_martens
+  Time in 1 calls to Function.__call__: 1.108646e-04s
+  Time in Function.fn.__call__: 1.020432e-04s (92.043%)
+  Time in thunks: 9.703636e-05s (87.527%)
+
+Ops
+---
+<% time> <sum %> <apply time> <time per call> <type> <#call> <#apply> <Op name>
+  100.0%   100.0%       0.000s       1.94e-05s     C        5        5   GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_co
+   ... (remaining 0 Ops account for   0.00%(0.00s) of the runtime)
+
+Apply
+------
+<% time> <sum %> <apply time> <time per call> <#call> <id> <Apply name>
+  38.1%    38.1%       0.000s       3.70e-05s      1     1 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  26.8%    64.9%       0.000s       2.60e-05s      1     4 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  13.5%    78.4%       0.000s       1.31e-05s      1     2 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  12.3%    90.7%       0.000s       1.19e-05s      1     3 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+   9.3%   100.0%       0.000s       9.06e-06s      1     0 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+   ... (remaining 0 Apply instances account for 0.00%(0.00s) of the runtime)
+
+Function profiling
+==================
+  Message: precond_martens
+  Time in 1 calls to Function.__call__: 1.142025e-04s
+  Time in Function.fn.__call__: 1.029968e-04s (90.188%)
+  Time in thunks: 9.799004e-05s (85.804%)
+
+Ops
+---
+<% time> <sum %> <apply time> <time per call> <type> <#call> <#apply> <Op name>
+  100.0%   100.0%       0.000s       1.96e-05s     C        5        5   GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_co
+   ... (remaining 0 Ops account for   0.00%(0.00s) of the runtime)
+
+Apply
+------
+<% time> <sum %> <apply time> <time per call> <#call> <id> <Apply name>
+  36.7%    36.7%       0.000s       3.60e-05s      1     1 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  28.5%    65.2%       0.000s       2.79e-05s      1     4 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  13.4%    78.6%       0.000s       1.31e-05s      1     3 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  12.2%    90.8%       0.000s       1.19e-05s      1     2 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+   9.2%   100.0%       0.000s       9.06e-06s      1     0 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+   ... (remaining 0 Apply instances account for 0.00%(0.00s) of the runtime)
+
+Function profiling
+==================
+  Message: precond_martens
+  Time in 1 calls to Function.__call__: 1.111031e-04s
+  Time in Function.fn.__call__: 1.008511e-04s (90.773%)
+  Time in thunks: 9.608269e-05s (86.481%)
+
+Ops
+---
+<% time> <sum %> <apply time> <time per call> <type> <#call> <#apply> <Op name>
+  100.0%   100.0%       0.000s       1.92e-05s     C        5        5   GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_co
+   ... (remaining 0 Ops account for   0.00%(0.00s) of the runtime)
+
+Apply
+------
+<% time> <sum %> <apply time> <time per call> <#call> <id> <Apply name>
+  36.5%    36.5%       0.000s       3.50e-05s      1     1 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  27.0%    63.5%       0.000s       2.60e-05s      1     4 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  13.6%    77.2%       0.000s       1.31e-05s      1     3 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  12.4%    89.6%       0.000s       1.19e-05s      1     2 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  10.4%   100.0%       0.000s       1.00e-05s      1     0 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+   ... (remaining 0 Apply instances account for 0.00%(0.00s) of the runtime)
+
+Function profiling
+==================
+  Message: precond_martens
+  Time in 1 calls to Function.__call__: 1.130104e-04s
+  Time in Function.fn.__call__: 1.029968e-04s (91.139%)
+  Time in thunks: 9.703636e-05s (85.865%)
+
+Ops
+---
+<% time> <sum %> <apply time> <time per call> <type> <#call> <#apply> <Op name>
+  100.0%   100.0%       0.000s       1.94e-05s     C        5        5   GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_co
+   ... (remaining 0 Ops account for   0.00%(0.00s) of the runtime)
+
+Apply
+------
+<% time> <sum %> <apply time> <time per call> <#call> <id> <Apply name>
+  38.1%    38.1%       0.000s       3.70e-05s      1     1 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  27.8%    65.8%       0.000s       2.69e-05s      1     4 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  12.5%    78.4%       0.000s       1.22e-05s      1     3 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  12.3%    90.7%       0.000s       1.19e-05s      1     2 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+   9.3%   100.0%       0.000s       9.06e-06s      1     0 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+   ... (remaining 0 Apply instances account for 0.00%(0.00s) of the runtime)
+
+Function profiling
+==================
+  Message: precond_martens
+  Time in 1 calls to Function.__call__: 1.180172e-04s
+  Time in Function.fn.__call__: 1.058578e-04s (89.697%)
+  Time in thunks: 1.001358e-04s (84.848%)
+
+Ops
+---
+<% time> <sum %> <apply time> <time per call> <type> <#call> <#apply> <Op name>
+  100.0%   100.0%       0.000s       2.00e-05s     C        5        5   GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_co
+   ... (remaining 0 Ops account for   0.00%(0.00s) of the runtime)
+
+Apply
+------
+<% time> <sum %> <apply time> <time per call> <#call> <id> <Apply name>
+  36.0%    36.0%       0.000s       3.60e-05s      1     1 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  29.0%    65.0%       0.000s       2.91e-05s      1     4 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  12.9%    77.9%       0.000s       1.29e-05s      1     3 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  12.1%    90.0%       0.000s       1.22e-05s      1     2 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  10.0%   100.0%       0.000s       1.00e-05s      1     0 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+   ... (remaining 0 Apply instances account for 0.00%(0.00s) of the runtime)
+
+Function profiling
+==================
+  Message: precond_martens
+  Time in 1 calls to Function.__call__: 1.180172e-04s
+  Time in Function.fn.__call__: 1.080036e-04s (91.515%)
+  Time in thunks: 1.027584e-04s (87.071%)
+
+Ops
+---
+<% time> <sum %> <apply time> <time per call> <type> <#call> <#apply> <Op name>
+  100.0%   100.0%       0.000s       2.06e-05s     C        5        5   GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_co
+   ... (remaining 0 Ops account for   0.00%(0.00s) of the runtime)
+
+Apply
+------
+<% time> <sum %> <apply time> <time per call> <#call> <id> <Apply name>
+  36.0%    36.0%       0.000s       3.70e-05s      1     1 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  26.2%    62.2%       0.000s       2.69e-05s      1     4 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  16.5%    78.7%       0.000s       1.69e-05s      1     3 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  11.6%    90.3%       0.000s       1.19e-05s      1     2 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+   9.7%   100.0%       0.000s       1.00e-05s      1     0 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+   ... (remaining 0 Apply instances account for 0.00%(0.00s) of the runtime)
+
+Function profiling
+==================
+  Message: precond_martens
+  Time in 1 calls to Function.__call__: 1.158714e-04s
+  Time in Function.fn.__call__: 1.060963e-04s (91.564%)
+  Time in thunks: 9.989738e-05s (86.214%)
+
+Ops
+---
+<% time> <sum %> <apply time> <time per call> <type> <#call> <#apply> <Op name>
+  100.0%   100.0%       0.000s       2.00e-05s     C        5        5   GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_co
+   ... (remaining 0 Ops account for   0.00%(0.00s) of the runtime)
+
+Apply
+------
+<% time> <sum %> <apply time> <time per call> <#call> <id> <Apply name>
+  37.0%    37.0%       0.000s       3.70e-05s      1     1 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  28.9%    65.9%       0.000s       2.88e-05s      1     4 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  12.9%    78.8%       0.000s       1.29e-05s      1     3 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  12.2%    90.9%       0.000s       1.22e-05s      1     2 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+   9.1%   100.0%       0.000s       9.06e-06s      1     0 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+   ... (remaining 0 Apply instances account for 0.00%(0.00s) of the runtime)
+
+Function profiling
+==================
+  Message: precond_martens
+  Time in 1 calls to Function.__call__: 1.118183e-04s
+  Time in Function.fn.__call__: 1.020432e-04s (91.258%)
+  Time in thunks: 9.799004e-05s (87.633%)
+
+Ops
+---
+<% time> <sum %> <apply time> <time per call> <type> <#call> <#apply> <Op name>
+  100.0%   100.0%       0.000s       1.96e-05s     C        5        5   GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_co
+   ... (remaining 0 Ops account for   0.00%(0.00s) of the runtime)
+
+Apply
+------
+<% time> <sum %> <apply time> <time per call> <#call> <id> <Apply name>
+  37.7%    37.7%       0.000s       3.70e-05s      1     1 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  27.5%    65.2%       0.000s       2.69e-05s      1     4 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  13.4%    78.6%       0.000s       1.31e-05s      1     3 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  12.2%    90.8%       0.000s       1.19e-05s      1     2 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+   9.2%   100.0%       0.000s       9.06e-06s      1     0 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+   ... (remaining 0 Apply instances account for 0.00%(0.00s) of the runtime)
+
+Function profiling
+==================
+  Message: precond_martens
+  Time in 1 calls to Function.__call__: 1.108646e-04s
+  Time in Function.fn.__call__: 1.008511e-04s (90.968%)
+  Time in thunks: 9.608269e-05s (86.667%)
+
+Ops
+---
+<% time> <sum %> <apply time> <time per call> <type> <#call> <#apply> <Op name>
+  100.0%   100.0%       0.000s       1.92e-05s     C        5        5   GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_co
+   ... (remaining 0 Ops account for   0.00%(0.00s) of the runtime)
+
+Apply
+------
+<% time> <sum %> <apply time> <time per call> <#call> <id> <Apply name>
+  37.5%    37.5%       0.000s       3.60e-05s      1     1 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  27.0%    64.5%       0.000s       2.60e-05s      1     4 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  13.4%    77.9%       0.000s       1.29e-05s      1     2 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  12.7%    90.6%       0.000s       1.22e-05s      1     3 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+   9.4%   100.0%       0.000s       9.06e-06s      1     0 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+   ... (remaining 0 Apply instances account for 0.00%(0.00s) of the runtime)
+
+Function profiling
+==================
+  Message: precond_martens
+  Time in 1 calls to Function.__call__: 1.089573e-04s
+  Time in Function.fn.__call__: 9.894371e-05s (90.810%)
+  Time in thunks: 9.417534e-05s (86.433%)
+
+Ops
+---
+<% time> <sum %> <apply time> <time per call> <type> <#call> <#apply> <Op name>
+  100.0%   100.0%       0.000s       1.88e-05s     C        5        5   GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_co
+   ... (remaining 0 Ops account for   0.00%(0.00s) of the runtime)
+
+Apply
+------
+<% time> <sum %> <apply time> <time per call> <#call> <id> <Apply name>
+  38.2%    38.2%       0.000s       3.60e-05s      1     1 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  25.6%    63.8%       0.000s       2.41e-05s      1     4 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  13.9%    77.7%       0.000s       1.31e-05s      1     2 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  12.7%    90.4%       0.000s       1.19e-05s      1     3 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+   9.6%   100.0%       0.000s       9.06e-06s      1     0 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+   ... (remaining 0 Apply instances account for 0.00%(0.00s) of the runtime)
+
+Function profiling
+==================
+  Message: precond_martens
+  Time in 1 calls to Function.__call__: 1.080036e-04s
+  Time in Function.fn.__call__: 9.894371e-05s (91.611%)
+  Time in thunks: 9.512901e-05s (88.079%)
+
+Ops
+---
+<% time> <sum %> <apply time> <time per call> <type> <#call> <#apply> <Op name>
+  100.0%   100.0%       0.000s       1.90e-05s     C        5        5   GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_co
+   ... (remaining 0 Ops account for   0.00%(0.00s) of the runtime)
+
+Apply
+------
+<% time> <sum %> <apply time> <time per call> <#call> <id> <Apply name>
+  37.8%    37.8%       0.000s       3.60e-05s      1     1 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  26.3%    64.2%       0.000s       2.50e-05s      1     4 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  13.5%    77.7%       0.000s       1.29e-05s      1     3 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  12.8%    90.5%       0.000s       1.22e-05s      1     2 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+   9.5%   100.0%       0.000s       9.06e-06s      1     0 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+   ... (remaining 0 Apply instances account for 0.00%(0.00s) of the runtime)
+
+Function profiling
+==================
+  Message: precond_martens
+  Time in 1 calls to Function.__call__: 1.120567e-04s
+  Time in Function.fn.__call__: 1.020432e-04s (91.064%)
+  Time in thunks: 9.512901e-05s (84.894%)
+
+Ops
+---
+<% time> <sum %> <apply time> <time per call> <type> <#call> <#apply> <Op name>
+  100.0%   100.0%       0.000s       1.90e-05s     C        5        5   GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_co
+   ... (remaining 0 Ops account for   0.00%(0.00s) of the runtime)
+
+Apply
+------
+<% time> <sum %> <apply time> <time per call> <#call> <id> <Apply name>
+  36.8%    36.8%       0.000s       3.50e-05s      1     1 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  28.3%    65.2%       0.000s       2.69e-05s      1     4 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  12.8%    77.9%       0.000s       1.22e-05s      1     3 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  12.5%    90.5%       0.000s       1.19e-05s      1     2 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+   9.5%   100.0%       0.000s       9.06e-06s      1     0 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+   ... (remaining 0 Apply instances account for 0.00%(0.00s) of the runtime)
+
+Function profiling
+==================
+  Message: precond_martens
+  Time in 1 calls to Function.__call__: 1.139641e-04s
+  Time in Function.fn.__call__: 1.029968e-04s (90.377%)
+  Time in thunks: 9.703636e-05s (85.146%)
+
+Ops
+---
+<% time> <sum %> <apply time> <time per call> <type> <#call> <#apply> <Op name>
+  100.0%   100.0%       0.000s       1.94e-05s     C        5        5   GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_co
+   ... (remaining 0 Ops account for   0.00%(0.00s) of the runtime)
+
+Apply
+------
+<% time> <sum %> <apply time> <time per call> <#call> <id> <Apply name>
+  37.1%    37.1%       0.000s       3.60e-05s      1     1 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  27.8%    64.9%       0.000s       2.69e-05s      1     4 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  13.5%    78.4%       0.000s       1.31e-05s      1     3 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  12.3%    90.7%       0.000s       1.19e-05s      1     2 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+   9.3%   100.0%       0.000s       9.06e-06s      1     0 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+   ... (remaining 0 Apply instances account for 0.00%(0.00s) of the runtime)
+
+Function profiling
+==================
+  Message: precond_martens
+  Time in 1 calls to Function.__call__: 1.130104e-04s
+  Time in Function.fn.__call__: 1.020432e-04s (90.295%)
+  Time in thunks: 9.894371e-05s (87.553%)
+
+Ops
+---
+<% time> <sum %> <apply time> <time per call> <type> <#call> <#apply> <Op name>
+  100.0%   100.0%       0.000s       1.98e-05s     C        5        5   GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_co
+   ... (remaining 0 Ops account for   0.00%(0.00s) of the runtime)
+
+Apply
+------
+<% time> <sum %> <apply time> <time per call> <#call> <id> <Apply name>
+  36.4%    36.4%       0.000s       3.60e-05s      1     1 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  27.2%    63.6%       0.000s       2.69e-05s      1     4 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  13.3%    76.9%       0.000s       1.31e-05s      1     3 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  13.3%    90.1%       0.000s       1.31e-05s      1     2 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+   9.9%   100.0%       0.000s       9.78e-06s      1     0 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+   ... (remaining 0 Apply instances account for 0.00%(0.00s) of the runtime)
+
+Function profiling
+==================
+  Message: precond_martens
+  Time in 1 calls to Function.__call__: 1.089573e-04s
+  Time in Function.fn.__call__: 9.894371e-05s (90.810%)
+  Time in thunks: 9.417534e-05s (86.433%)
+
+Ops
+---
+<% time> <sum %> <apply time> <time per call> <type> <#call> <#apply> <Op name>
+  100.0%   100.0%       0.000s       1.88e-05s     C        5        5   GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_co
+   ... (remaining 0 Ops account for   0.00%(0.00s) of the runtime)
+
+Apply
+------
+<% time> <sum %> <apply time> <time per call> <#call> <id> <Apply name>
+  38.2%    38.2%       0.000s       3.60e-05s      1     1 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  25.6%    63.8%       0.000s       2.41e-05s      1     4 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  13.9%    77.7%       0.000s       1.31e-05s      1     2 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  12.7%    90.4%       0.000s       1.19e-05s      1     3 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+   9.6%   100.0%       0.000s       9.06e-06s      1     0 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+   ... (remaining 0 Apply instances account for 0.00%(0.00s) of the runtime)
+
+Function profiling
+==================
+  Message: precond_martens
+  Time in 1 calls to Function.__call__: 1.089573e-04s
+  Time in Function.fn.__call__: 9.799004e-05s (89.934%)
+  Time in thunks: 9.369850e-05s (85.996%)
+
+Ops
+---
+<% time> <sum %> <apply time> <time per call> <type> <#call> <#apply> <Op name>
+  100.0%   100.0%       0.000s       1.87e-05s     C        5        5   GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_co
+   ... (remaining 0 Ops account for   0.00%(0.00s) of the runtime)
+
+Apply
+------
+<% time> <sum %> <apply time> <time per call> <#call> <id> <Apply name>
+  38.4%    38.4%       0.000s       3.60e-05s      1     1 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  25.4%    63.9%       0.000s       2.38e-05s      1     4 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  14.0%    77.9%       0.000s       1.31e-05s      1     2 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  12.7%    90.6%       0.000s       1.19e-05s      1     3 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+   9.4%   100.0%       0.000s       8.82e-06s      1     0 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+   ... (remaining 0 Apply instances account for 0.00%(0.00s) of the runtime)
+
+Function profiling
+==================
+  Message: precond_martens
+  Time in 1 calls to Function.__call__: 1.771450e-04s
+  Time in Function.fn.__call__: 1.668930e-04s (94.213%)
+  Time in thunks: 1.628399e-04s (91.925%)
+
+Ops
+---
+<% time> <sum %> <apply time> <time per call> <type> <#call> <#apply> <Op name>
+  100.0%   100.0%       0.000s       3.26e-05s     C        5        5   GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_co
+   ... (remaining 0 Ops account for   0.00%(0.00s) of the runtime)
+
+Apply
+------
+<% time> <sum %> <apply time> <time per call> <#call> <id> <Apply name>
+  60.2%    60.2%       0.000s       9.80e-05s      1     1 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  17.1%    77.3%       0.000s       2.79e-05s      1     4 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+   8.1%    85.4%       0.000s       1.31e-05s      1     3 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+   7.9%    93.3%       0.000s       1.29e-05s      1     2 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+   6.7%   100.0%       0.000s       1.10e-05s      1     0 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+   ... (remaining 0 Apply instances account for 0.00%(0.00s) of the runtime)
+
+Function profiling
+==================
+  Message: precond_martens
+  Time in 1 calls to Function.__call__: 1.201630e-04s
+  Time in Function.fn.__call__: 1.080036e-04s (89.881%)
+  Time in thunks: 1.039505e-04s (86.508%)
+
+Ops
+---
+<% time> <sum %> <apply time> <time per call> <type> <#call> <#apply> <Op name>
+  100.0%   100.0%       0.000s       2.08e-05s     C        5        5   GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_co
+   ... (remaining 0 Ops account for   0.00%(0.00s) of the runtime)
+
+Apply
+------
+<% time> <sum %> <apply time> <time per call> <#call> <id> <Apply name>
+  35.6%    35.6%       0.000s       3.70e-05s      1     1 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  28.9%    64.4%       0.000s       3.00e-05s      1     4 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  13.3%    77.8%       0.000s       1.38e-05s      1     3 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  12.6%    90.4%       0.000s       1.31e-05s      1     2 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+   9.6%   100.0%       0.000s       1.00e-05s      1     0 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+   ... (remaining 0 Apply instances account for 0.00%(0.00s) of the runtime)
+
+Function profiling
+==================
+  Message: precond_martens
+  Time in 1 calls to Function.__call__: 1.139641e-04s
+  Time in Function.fn.__call__: 1.029968e-04s (90.377%)
+  Time in thunks: 9.775162e-05s (85.774%)
+
+Ops
+---
+<% time> <sum %> <apply time> <time per call> <type> <#call> <#apply> <Op name>
+  100.0%   100.0%       0.000s       1.96e-05s     C        5        5   GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_co
+   ... (remaining 0 Ops account for   0.00%(0.00s) of the runtime)
+
+Apply
+------
+<% time> <sum %> <apply time> <time per call> <#call> <id> <Apply name>
+  36.8%    36.8%       0.000s       3.60e-05s      1     1 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  27.6%    64.4%       0.000s       2.69e-05s      1     4 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  13.4%    77.8%       0.000s       1.31e-05s      1     2 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  13.2%    91.0%       0.000s       1.29e-05s      1     3 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+   9.0%   100.0%       0.000s       8.82e-06s      1     0 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+   ... (remaining 0 Apply instances account for 0.00%(0.00s) of the runtime)
+
+Function profiling
+==================
+  Message: precond_martens
+  Time in 1 calls to Function.__call__: 1.139641e-04s
+  Time in Function.fn.__call__: 1.029968e-04s (90.377%)
+  Time in thunks: 9.822845e-05s (86.192%)
+
+Ops
+---
+<% time> <sum %> <apply time> <time per call> <type> <#call> <#apply> <Op name>
+  100.0%   100.0%       0.000s       1.96e-05s     C        5        5   GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_co
+   ... (remaining 0 Ops account for   0.00%(0.00s) of the runtime)
+
+Apply
+------
+<% time> <sum %> <apply time> <time per call> <#call> <id> <Apply name>
+  37.6%    37.6%       0.000s       3.70e-05s      1     1 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  27.7%    65.3%       0.000s       2.72e-05s      1     4 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  12.4%    77.7%       0.000s       1.22e-05s      1     2 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  12.1%    89.8%       0.000s       1.19e-05s      1     3 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  10.2%   100.0%       0.000s       1.00e-05s      1     0 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+   ... (remaining 0 Apply instances account for 0.00%(0.00s) of the runtime)
+
+Function profiling
+==================
+  Message: precond_martens
+  Time in 1 calls to Function.__call__: 1.139641e-04s
+  Time in Function.fn.__call__: 1.039505e-04s (91.213%)
+  Time in thunks: 9.989738e-05s (87.657%)
+
+Ops
+---
+<% time> <sum %> <apply time> <time per call> <type> <#call> <#apply> <Op name>
+  100.0%   100.0%       0.000s       2.00e-05s     C        5        5   GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_co
+   ... (remaining 0 Ops account for   0.00%(0.00s) of the runtime)
+
+Apply
+------
+<% time> <sum %> <apply time> <time per call> <#call> <id> <Apply name>
+  36.0%    36.0%       0.000s       3.60e-05s      1     1 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  27.9%    64.0%       0.000s       2.79e-05s      1     4 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  13.1%    77.1%       0.000s       1.31e-05s      1     2 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  12.9%    90.0%       0.000s       1.29e-05s      1     3 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  10.0%   100.0%       0.000s       1.00e-05s      1     0 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+   ... (remaining 0 Apply instances account for 0.00%(0.00s) of the runtime)
+
+Function profiling
+==================
+  Message: precond_martens
+  Time in 1 calls to Function.__call__: 1.130104e-04s
+  Time in Function.fn.__call__: 1.029968e-04s (91.139%)
+  Time in thunks: 9.894371e-05s (87.553%)
+
+Ops
+---
+<% time> <sum %> <apply time> <time per call> <type> <#call> <#apply> <Op name>
+  100.0%   100.0%       0.000s       1.98e-05s     C        5        5   GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_co
+   ... (remaining 0 Ops account for   0.00%(0.00s) of the runtime)
+
+Apply
+------
+<% time> <sum %> <apply time> <time per call> <#call> <id> <Apply name>
+  36.4%    36.4%       0.000s       3.60e-05s      1     1 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  28.2%    64.6%       0.000s       2.79e-05s      1     4 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  13.3%    77.8%       0.000s       1.31e-05s      1     3 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  12.0%    89.9%       0.000s       1.19e-05s      1     2 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  10.1%   100.0%       0.000s       1.00e-05s      1     0 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+   ... (remaining 0 Apply instances account for 0.00%(0.00s) of the runtime)
+
+Function profiling
+==================
+  Message: precond_martens
+  Time in 1 calls to Function.__call__: 1.130104e-04s
+  Time in Function.fn.__call__: 1.029968e-04s (91.139%)
+  Time in thunks: 9.822845e-05s (86.920%)
+
+Ops
+---
+<% time> <sum %> <apply time> <time per call> <type> <#call> <#apply> <Op name>
+  100.0%   100.0%       0.000s       1.96e-05s     C        5        5   GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_co
+   ... (remaining 0 Ops account for   0.00%(0.00s) of the runtime)
+
+Apply
+------
+<% time> <sum %> <apply time> <time per call> <#call> <id> <Apply name>
+  36.7%    36.7%       0.000s       3.60e-05s      1     1 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  27.7%    64.3%       0.000s       2.72e-05s      1     4 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  13.1%    77.4%       0.000s       1.29e-05s      1     3 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  12.4%    89.8%       0.000s       1.22e-05s      1     2 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  10.2%   100.0%       0.000s       1.00e-05s      1     0 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+   ... (remaining 0 Apply instances account for 0.00%(0.00s) of the runtime)
+
+Function profiling
+==================
+  Message: precond_martens
+  Time in 1 calls to Function.__call__: 1.139641e-04s
+  Time in Function.fn.__call__: 1.049042e-04s (92.050%)
+  Time in thunks: 9.894371e-05s (86.820%)
+
+Ops
+---
+<% time> <sum %> <apply time> <time per call> <type> <#call> <#apply> <Op name>
+  100.0%   100.0%       0.000s       1.98e-05s     C        5        5   GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_co
+   ... (remaining 0 Ops account for   0.00%(0.00s) of the runtime)
+
+Apply
+------
+<% time> <sum %> <apply time> <time per call> <#call> <id> <Apply name>
+  36.4%    36.4%       0.000s       3.60e-05s      1     1 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  28.2%    64.6%       0.000s       2.79e-05s      1     4 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  13.3%    77.8%       0.000s       1.31e-05s      1     2 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  13.0%    90.8%       0.000s       1.29e-05s      1     3 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+   9.2%   100.0%       0.000s       9.06e-06s      1     0 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+   ... (remaining 0 Apply instances account for 0.00%(0.00s) of the runtime)
+
+Function profiling
+==================
+  Message: precond_martens
+  Time in 1 calls to Function.__call__: 1.089573e-04s
+  Time in Function.fn.__call__: 1.001358e-04s (91.904%)
+  Time in thunks: 9.465218e-05s (86.871%)
+
+Ops
+---
+<% time> <sum %> <apply time> <time per call> <type> <#call> <#apply> <Op name>
+  100.0%   100.0%       0.000s       1.89e-05s     C        5        5   GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_co
+   ... (remaining 0 Ops account for   0.00%(0.00s) of the runtime)
+
+Apply
+------
+<% time> <sum %> <apply time> <time per call> <#call> <id> <Apply name>
+  38.0%    38.0%       0.000s       3.60e-05s      1     1 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  26.2%    64.2%       0.000s       2.48e-05s      1     4 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  13.9%    78.1%       0.000s       1.31e-05s      1     3 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  12.6%    90.7%       0.000s       1.19e-05s      1     2 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+   9.3%   100.0%       0.000s       8.82e-06s      1     0 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+   ... (remaining 0 Apply instances account for 0.00%(0.00s) of the runtime)
+
+Function profiling
+==================
+  Message: precond_martens
+  Time in 1 calls to Function.__call__: 1.101494e-04s
+  Time in Function.fn.__call__: 9.894371e-05s (89.827%)
+  Time in thunks: 9.512901e-05s (86.364%)
+
+Ops
+---
+<% time> <sum %> <apply time> <time per call> <type> <#call> <#apply> <Op name>
+  100.0%   100.0%       0.000s       1.90e-05s     C        5        5   GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_co
+   ... (remaining 0 Ops account for   0.00%(0.00s) of the runtime)
+
+Apply
+------
+<% time> <sum %> <apply time> <time per call> <#call> <id> <Apply name>
+  38.8%    38.8%       0.000s       3.70e-05s      1     1 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  25.3%    64.2%       0.000s       2.41e-05s      1     4 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  13.5%    77.7%       0.000s       1.29e-05s      1     2 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+  12.8%    90.5%       0.000s       1.22e-05s      1     3 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+   9.5%   100.0%       0.000s       9.06e-06s      1     0 GpuElemwise{Pow{output_types_preference=transfer_type{0}, _op_use_c_code=True}}[(
+   ... (remaining 0 Apply instances account for 0.00%(0.00s) of the runtime)
