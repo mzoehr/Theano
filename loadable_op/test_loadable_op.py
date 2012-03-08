@@ -27,12 +27,14 @@ class Data(object):
 
       typical minibatch definition: [N,seq_len,frame]
     """
-    def __init__(self, shape=(5, 5), N=10):
+    def __init__(self, shape=(5, 5), N=10, dtype=None):
+        if dtype is None:
+            dtype = theano.config.floatX
 
         self.N = N
-        self.inputs = [np.random.random(shape).astype(theano.config.floatX)
+        self.inputs = [np.random.random(shape).astype(dtype)
                        for _ in range(self.N)]
-        self.targets = [np.random.random(shape).astype(theano.config.floatX)
+        self.targets = [np.random.random(shape).astype(dtype)
                         for _ in range(self.N)]
 
     def get_input(self, idx):
@@ -76,6 +78,63 @@ def test_loadable():
         test_func = theano.function(inputs=[index], outputs=[result, x, y],
                                     givens=givens)
         theano.printing.debugprint(test_func)
+
+        # we run the test
+        for i in range(data.N):
+            values = test_func(i)
+            if  np.sum((values[0] - (data.inputs[i] + data.targets[i]))) != 0:
+                print 'computation incorrect', i
+                print 'value', value
+                print 'sum', data.inputs[i] + data.targets[i]
+                print 'inputs', data.inputs[i]
+                print 'targets', data.targets[i]
+                assert False
+            values2 = test_func(i)
+            for i in range(3):
+                assert not may_share_memory(values2[i], values[i])
+                assert (np.asarray(values2[i]) == np.asarray(values[i])).all()
+        print 'computation correct for shape', shape
+
+
+def test_loadable_gpu():
+    mode = theano.compile.mode.get_default_mode().including('gpu')
+    import theano.sandbox.cuda as cuda
+
+    if cuda.cuda_available == False:
+        raise SkipTest('Optional package cuda disabled')
+    #-----------------------------------------------------
+    # define the parameters
+    #-----------------------------------------------------
+    N = 100
+    shapes = [5, (5, 6), (4, 5, 6), (3, 4, 5, 6)]
+    types = [T.fvector, T.fmatrix, T.ftensor3, T.ftensor4]
+
+    #-----------------------------------------------------
+    # start the demo
+    #-----------------------------------------------------
+    for shape, typ in zip(shapes, types):
+
+        # we create a Data object
+        data = Data(shape, N, dtype='float32')
+
+        # we create a Theano Loadable object (shared_memory + callback)
+        inputs = Loadable(data.get_input, 'input')
+        targets = Loadable(data.get_target, 'target')
+
+        # we define a givens term
+        index = T.scalar()
+        x = typ('x')
+        y = typ('y')
+        givens = {x: inputs(index), y: targets(index)}
+
+        # we define a theano function
+        result = T.vector()
+        result = x + y
+        result = cuda.gpu_from_host(result)
+        test_func = theano.function(inputs=[index], outputs=[result, x, y],
+                                    givens=givens,
+                                    mode=mode)
+        theano.printing.debugprint(test_func, print_type=True)
 
         # we run the test
         for i in range(data.N):
