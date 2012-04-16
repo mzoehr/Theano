@@ -14,6 +14,7 @@ class RNN(object):
         """
         """
 
+        self.input = input
         # store rng
         self.rng = rng
         # length of output taps
@@ -61,6 +62,7 @@ class RNN(object):
     def step(self, u_t, *args):
             # get the recurrent activations
             r_act_vals = [args[u] for u in xrange(self.len_output_taps)]
+
             # get the recurrent weights
             r_weights = [args[u] for u in range(self.len_output_taps, \
                                                 (self.len_output_taps) * 2)]
@@ -113,6 +115,7 @@ class OutputLayer(object):
             self.output = y
 
         else:
+
             # compute vector of class-membership probabilities in symbolic form
             self.p_y_given_x = T.nnet.softmax(T.dot(input, W) + b)
             # output activations
@@ -150,7 +153,8 @@ class Engine(object):
         # THEANO SETUP
         #-----------------------------------------
         # setup mode
-        mode = theano.Mode(linker='cvm') #'DEBUG_MODE' 
+        mode = 'DEBUG_MODE'
+        #mode = theano.Mode(linker='cvm')
         # setup profile
         profile = 0
         # theano dtype
@@ -160,7 +164,7 @@ class Engine(object):
         # MODEL PARAMETERS
         #-----------------------------------------
         # number of samples
-        N = 1000
+        N = 10
         # number of input units
         n_in = 784
         # number of hidden units
@@ -169,8 +173,6 @@ class Engine(object):
         n_out = 10
         # sequence length
         length = 10
-        # batch_size
-        batch_size = 100
         # downsample
         maxpooling = [1, 2]
         # initialize random generator
@@ -180,9 +182,9 @@ class Engine(object):
         # DATA SETUP (simply random data)
         #-----------------------------------------
         data_x = numpy.random.randn(N, length, n_in).astype('float32')
-        data_y = numpy.random.randint(0, n_out, (N * length)).astype('int8')
+        #data_y = numpy.random.randint(0, n_out, (N * length)).astype('int8')
         print '... input shape: {} '.format(data_x.shape)
-        print '... output shape: {} '.format(data_y.shape)
+        #print '... output shape: {} '.format(data_y.shape)
 
         #-----------------------------------------
         # SETUP MODEL
@@ -235,7 +237,7 @@ class Engine(object):
         self.cost = self.outputLayer.negative_log_likelihood(self.t)
 
         # define the output of the model
-        output = self.outputLayer.output
+        output = self.rnnLayers[-1].output #self.outputLayer.output
 
         # add the network parameters 
         params = []
@@ -246,62 +248,17 @@ class Engine(object):
                 .format(n_in, n_hidden, n_out, maxpooling)
 
         #-----------------------------------------
-        # THEANO train function
+        # DEMO FUNCTION
         #-----------------------------------------
-        """
-        gparams = []
-        for param in self.params:
-            gparam = T.grad(self.cost, param)
-            gparams.append(gparam)
-
-        # specify how to update the parameters of the model as a dictionary
-        updates = {}
-        for param, gparam in zip(self.params, gparams):
-            updates[param] = param - self.lr * gparam
-
-        # compiling a Theano function `train_fn` that returns the cost, but
-        # in the same time updates the parameter of the model based on the
-        # rules defined in `updates`
-        train_fn = theano.function(inputs=[self.u, self.t],
-                outputs=self.cost,
-                updates=updates,
-                givens={self.lr: T.cast(0.001, 'float32')},
-                mode=mode,
-                profile=profile,
-                allow_input_downcast=True)
-        """
-
-        #-------------------------------------------------------------------
-        # GAUSS_NEWTON calculation (demo)
-        #-------------------------------------------------------------------
-        lambda_ = theano.shared(numpy.array(0.01, dtype=dtype), borrow=True)
-        def gauss_vect_mult(v):
-            Jv = T.Rop(output, params, v)
-            HJv = T.grad(T.sum(T.grad(self.cost, output) * Jv), output, consider_constant=[Jv])
-            JHJv = T.grad(T.sum(HJv * output), params, consider_constant=[HJv, Jv])
-            if not isinstance(JHJv, list):
-                JHJv = [JHJv]
-            JHJv = [a + lambda_ * b for a, b in zip(JHJv, v)]
-            return JHJv
-
-        # demo x to test our function (this simply calculates the 
-        # GaussNewtonApprox of the Hessian and multiplies it with the gradient
-        # (normally used to test NaNs)
-        givens = {self.u: data_x, self.t: data_y}
+        givens = {self.u: data_x}
         grhs = [theano.shared(numpy.zeros(p.get_value().shape, dtype=dtype), borrow=True) for p in params]
-        x = [theano.shared(numpy.zeros(p.get_value().shape, dtype=dtype), borrow=True) for p in grhs]
-        gauss_grad_mult = theano.function([], sum([T.sum(a * b) for a, b in zip(gauss_vect_mult(grhs), grhs)]), givens=givens, mode=mode, profile=profile)
+        func = theano.function(inputs=[], outputs=T.Rop(output, params, grhs), givens=givens, mode=mode, profile=profile)
 
         #-----------------------------------------
         # DEMO START
         #-----------------------------------------
-        # start the benchmark
-        start_time = time.clock()
-        print 'Running ({} epochs)'.format(n_epochs)
-        for _ in xrange(n_epochs):
-            gauss_grad_mult()
-        print >> sys.stderr, ('     training epoch time (%.5fm)' % \
-                              ((time.clock() - start_time) / 60.))
+        func()
+        # BOOM!!!
 
 #------------------------------------------------------------------------------
 if __name__ == '__main__':
